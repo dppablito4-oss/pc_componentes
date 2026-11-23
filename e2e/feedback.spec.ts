@@ -17,6 +17,7 @@ test('Feedback is the first header control, and clear of the others', async ({
 }, testInfo) => {
   await page.goto('/');
   const actions = page.locator('.header-actions > *');
+  await expect(page.locator('.topbar')).not.toContainText('Yoseph');
   // The full label on desktop, "Feedback" alone on a phone.
   await expect(actions.first()).toHaveAccessibleName(
     testInfo.project.name === 'mobile' ? 'Opinar' : 'Comentarios',
@@ -26,7 +27,7 @@ test('Feedback is the first header control, and clear of the others', async ({
   expect(feedback.x).toBeGreaterThanOrEqual(0);
   expect(feedback.x + feedback.width).toBeLessThanOrEqual(viewport.width);
   const others = page.locator(
-    '.topbar .brand, .topbar .byline, .header-actions > *:not(.feedback-button)',
+    '.topbar .brand, .topbar .brand-caption, .header-actions > *:not(.feedback-button)',
   );
   for (const other of await others.all()) {
     const box = await other.boundingBox();

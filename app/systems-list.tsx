@@ -1,11 +1,34 @@
 'use client';
 import { systemRoot, type LevelId } from '@/lib/levels';
 import { useState } from 'react';
-import { ChevronDown } from 'lucide-react';
+import {
+  Check,
+  ChevronDown,
+  CircuitBoard,
+  Cpu,
+  Eye,
+  Fan,
+  Gpu,
+  HardDrive,
+  MemoryStick,
+  PcCase,
+  Zap,
+} from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { categories, manifest, type Category } from '@/lib/manifest';
 import { bilingualPartName, categoryEs, partNameEs } from '@/lib/locale-es';
 import { hueOfSystem, hueStyle } from '@/lib/palette';
+
+const systemIcons = {
+  Chassis: PcCase,
+  Cooling: Fan,
+  Board: CircuitBoard,
+  Power: Zap,
+  Memory: MemoryStick,
+  Storage: HardDrive,
+  Compute: Cpu,
+  Graphics: Gpu,
+};
 
 type Props = {
   level: LevelId;
@@ -36,7 +59,9 @@ export default function SystemsList({
   return (
     <div className="systems-section">
       <div className="section-heading">
-        Sistemas visibles{' '}
+        <span className="systems-title">
+          <Eye size={13} aria-hidden="true" /> Sistemas visibles
+        </span>
         <button onClick={onToggleAll}>
           {visible.length === categories.length
             ? 'Ocultar todo'
@@ -44,74 +69,80 @@ export default function SystemsList({
         </button>
       </div>
       <div className="layer-scroll">
-        {categories.map((category) => (
-          <div key={category} style={hueStyle(hueOfSystem(category))}>
-            <div className="layer-row">
-              <button
-                className="category-visibility"
-                aria-pressed={visible.includes(category)}
-                aria-label={
-                  (visible.includes(category) ? 'Ocultar ' : 'Mostrar ') +
-                  categoryEs[category]
-                }
-                onClick={() => onToggleCategory(category)}
-              >
-                <i />
-                <span>{categoryEs[category]}</span>
-                <small>{visible.includes(category) ? 'Sí' : 'No'}</small>
-              </button>
-              <button
-                className="category-expand"
-                onClick={() =>
-                  setExpanded(expanded === category ? null : category)
-                }
-                aria-expanded={expanded === category}
-                aria-label={
-                  (expanded === category ? 'Ocultar' : 'Mostrar') +
-                  ' componentes de ' +
-                  categoryEs[category]
-                }
-              >
-                <ChevronDown size={12} />
-              </button>
-            </div>
-            {expanded === category && (
-              <div className="sublayers">
-                {manifest
-                  .filter(
-                    (c) =>
-                      c.category === category &&
-                      c.open !== c.level &&
-                      systemRoot(c.level) === systemRoot(level),
-                  )
-                  .map((c) => (
-                    <div key={c.id}>
-                      <button
-                        title={bilingualPartName(c)}
-                        onClick={() => onSelectConcept(c.id)}
-                      >
-                        {partNameEs(c, true)}
-                      </button>
-                      <Switch
-                        size="sm"
-                        checked={
-                          visible.includes(category) && !hidden.includes(c.id)
-                        }
-                        onCheckedChange={(checked) =>
-                          onSetConceptVisible(c.id, category, checked)
-                        }
-                        aria-label={
-                          (visible.includes(category) && !hidden.includes(c.id)
-                            ? 'Ocultar '
-                            : 'Mostrar ') + partNameEs(c)
-                        }
-                      />
-                    </div>
-                  ))}
+        {categories.map((category) => {
+          const Icon = systemIcons[category];
+          const enabled = visible.includes(category);
+          return (
+            <div key={category} style={hueStyle(hueOfSystem(category))}>
+              <div className="layer-row">
+                <button
+                  className="category-visibility"
+                  aria-pressed={enabled}
+                  aria-label={
+                    (enabled ? 'Ocultar ' : 'Mostrar ') + categoryEs[category]
+                  }
+                  onClick={() => onToggleCategory(category)}
+                >
+                  <span className="system-check" aria-hidden="true">
+                    {enabled && <Check size={10} strokeWidth={3} />}
+                  </span>
+                  <Icon className="system-icon" size={16} aria-hidden="true" />
+                  <span>{categoryEs[category]}</span>
+                </button>
+                <button
+                  className="category-expand"
+                  onClick={() =>
+                    setExpanded(expanded === category ? null : category)
+                  }
+                  aria-expanded={expanded === category}
+                  aria-label={
+                    (expanded === category ? 'Ocultar' : 'Mostrar') +
+                    ' componentes de ' +
+                    categoryEs[category]
+                  }
+                >
+                  <ChevronDown size={12} />
+                </button>
               </div>
-            )}
-          </div>
-        ))}
+              {expanded === category && (
+                <div className="sublayers">
+                  {manifest
+                    .filter(
+                      (c) =>
+                        c.category === category &&
+                        c.open !== c.level &&
+                        systemRoot(c.level) === systemRoot(level),
+                    )
+                    .map((c) => (
+                      <div key={c.id}>
+                        <button
+                          title={bilingualPartName(c)}
+                          onClick={() => onSelectConcept(c.id)}
+                        >
+                          {partNameEs(c, true)}
+                        </button>
+                        <Switch
+                          size="sm"
+                          checked={
+                            visible.includes(category) && !hidden.includes(c.id)
+                          }
+                          onCheckedChange={(checked) =>
+                            onSetConceptVisible(c.id, category, checked)
+                          }
+                          aria-label={
+                            (visible.includes(category) &&
+                            !hidden.includes(c.id)
+                              ? 'Ocultar '
+                              : 'Mostrar ') + partNameEs(c)
+                          }
+                        />
+                      </div>
+                    ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );

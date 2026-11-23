@@ -64,4 +64,8 @@ test('the back button can climb to the parent of a direct link', async ({
   await expect(
     page.getByRole('heading', { name: 'PC de escritorio' }),
   ).toBeVisible();
+  const slider = page.getByRole('slider', { name: 'Desmontar el modelo' });
+  await expect(slider).toHaveAttribute('aria-valuenow', '0');
+  await page.getByRole('button', { name: 'Inventario', exact: true }).click();
+  await expect(slider).toHaveAttribute('aria-valuenow', '100');
 });

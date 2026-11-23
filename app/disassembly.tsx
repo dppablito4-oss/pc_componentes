@@ -1,5 +1,5 @@
 'use client';
-import { Pause, Play, RotateCcw } from 'lucide-react';
+import { PackageOpen, Pause, Play, RotateCcw } from 'lucide-react';
 import { phaseEs } from '@/lib/locale-es';
 import { Slider } from '@/components/ui/slider';
 import { levels, type LevelId } from '@/lib/levels';
@@ -33,6 +33,7 @@ export default function Disassembly({
 }: Props) {
   const phases = levels[level].phases,
     explodePercent = Math.round(explode);
+  const inventory = phases.find(([, value]) => Number(value) === 100);
   return (
     <section className="disassembly" aria-label={sectionLabel}>
       <div className="disassembly-intro">
@@ -48,6 +49,7 @@ export default function Disassembly({
               ? 'Pausar desmontaje automático'
               : 'Desmontar automáticamente'
           }
+          title={playing ? 'Pausar desmontaje' : 'Desmontar automáticamente'}
         >
           {playing ? <Pause size={23} /> : <Play size={23} />}
           <span>{playing ? 'Pausa' : 'Auto'}</span>
@@ -61,15 +63,25 @@ export default function Disassembly({
       </div>
       <div className="timeline">
         <div className="phase-labels">
-          {phases.map(([name, value]) => (
-            <button
-              key={phaseEs[name] ?? name}
-              className={Math.abs(explode - Number(value)) < 13 ? 'active' : ''}
-              onClick={() => onSetExplode(Number(value))}
-            >
-              {phaseEs[name] ?? name}
-            </button>
-          ))}
+          {phases
+            .filter((phase) => phase !== inventory)
+            .map(([name, value]) => (
+              <button
+                key={name}
+                className={
+                  (
+                    Number(value) === 0
+                      ? explode < 13
+                      : explode >= 13 && explode < 100
+                  )
+                    ? 'active'
+                    : ''
+                }
+                onClick={() => onSetExplode(Number(value))}
+              >
+                {phaseEs[name] ?? name}
+              </button>
+            ))}
         </div>
         <Slider
           value={[explode]}
@@ -86,6 +98,17 @@ export default function Disassembly({
         </div>
       </div>
       <div className="disassembly-readout">
+        {inventory && (
+          <button
+            type="button"
+            className="inventory-button"
+            aria-pressed={explode === 100}
+            onClick={() => onSetExplode(Number(inventory[1]))}
+          >
+            <PackageOpen size={16} aria-hidden="true" />
+            {phaseEs[inventory[0]] ?? inventory[0]}
+          </button>
+        )}
         <output>{explodePercent}%</output>
         <button
           className="reset"

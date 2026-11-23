@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @import './workbench.css';
+@import './explorer-presentation.css';
 @custom-variant dark (&:is(.dark *));
 @theme inline {
   --color-background: var(--background);

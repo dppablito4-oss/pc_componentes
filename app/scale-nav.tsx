@@ -188,7 +188,7 @@ export default function ScaleNav({
       </button>
       <nav className="system-picker" aria-label="Elegir un equipo">
         {systemRoots.map((root) => {
-          const Icon = levelIcon[root];
+          const Icon = root === 'pc' ? Monitor : levelIcon[root];
           return (
             <button
               key={root}

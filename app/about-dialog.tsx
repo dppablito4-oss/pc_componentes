@@ -7,6 +7,7 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { sources } from '@/lib/manifest';
+import licenseUrl from '../LICENSE?url&no-inline';
 import { GUIDE, GUIDE_ACCELERATION, REPOSITORY } from './links';
 
 type Props = { open: boolean; onOpenChange: (open: boolean) => void };
@@ -37,7 +38,7 @@ export default function AboutDialog({ open, onOpenChange }: Props) {
           lógica documentada. El GB202 completo tiene 192 SM. La RTX 5090 activa
           170.
         </p>
-        <h3>Investigación y créditos</h3>
+        <h3>Fuentes y licencia</h3>
         <a className="about-source" href={GUIDE_ACCELERATION}>
           Configurar la aceleración gráfica del navegador{' '}
           <ArrowUpRight size={15} />
@@ -76,6 +77,15 @@ export default function AboutDialog({ open, onOpenChange }: Props) {
           rel="noreferrer"
         >
           Código fuente original de PC Anatomy
+          <ArrowUpRight size={15} />
+        </a>
+        <a
+          className="about-source"
+          href={licenseUrl}
+          target="_blank"
+          rel="noreferrer"
+        >
+          Licencia MIT
           <ArrowUpRight size={15} />
         </a>
         <p className="about-foot">

@@ -214,9 +214,7 @@ a {
   inset: 0 0 auto;
   height: 76px;
   display: grid;
-  /* The outer columns size to their contents and the byline is centred in
-     the space between them, so a long first button pushes it aside rather
-     than running into it. */
+  /* Give the central caption the space left by the brand and controls. */
   grid-template-columns: auto minmax(0, 1fr) auto;
   gap: 16px;
   align-items: center;
@@ -279,36 +277,6 @@ a {
   display: flex;
   align-items: center;
   gap: 14px;
-}
-/* A centered, readable authorship link at every screen size. */
-.byline {
-  justify-self: center;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  min-height: 30px;
-  padding: 0 10px;
-  border-radius: 4px;
-  color: #bdc3cc;
-  font-size: 11.5px;
-  white-space: nowrap;
-  background: #1b1d22;
-  border: 1px solid #363b47;
-  letter-spacing: 0.2px;
-  transition:
-    color 0.15s ease,
-    background 0.15s ease;
-}
-.byline strong {
-  color: var(--accent-bright);
-  font-weight: 600;
-}
-.byline:hover {
-  color: #d6d9dd;
-  background: #191a1c;
-}
-.byline:hover strong {
-  color: var(--accent-bright);
 }
 .search-button {
   height: 36px;
@@ -537,28 +505,10 @@ a {
 .category-expand:hover {
   background: #26292e;
 }
-.category-visibility > i {
-  width: 8px;
-  height: 8px;
-  border-radius: 2px;
-  flex-shrink: 0;
-  background: var(--hue);
-  box-shadow: 0 0 6px color-mix(in srgb, var(--hue) 45%, transparent);
-}
 .category-visibility > span {
   min-width: 0;
   flex: 1;
   font-size: 12px;
-}
-.category-visibility > small {
-  font: 600 8px monospace;
-  letter-spacing: 0.5px;
-  padding: 1px 5px;
-  border-radius: 3px;
-  background: color-mix(in srgb, var(--hue) 13%, #141618);
-  border: 1px solid color-mix(in srgb, var(--hue) 38%, #2a2d32);
-  color: var(--hue);
-  text-transform: uppercase;
 }
 .category-visibility[aria-pressed='false'] {
   color: #7c8088;
@@ -1980,9 +1930,6 @@ a {
     grid-template-columns: auto minmax(0, 1fr) auto;
     gap: 12px;
   }
-  .byline {
-    justify-self: center;
-  }
   .brand {
     font-size: 17px;
   }
@@ -1996,12 +1943,6 @@ a {
   }
   .search-button {
     height: 34px;
-  }
-  .byline {
-    padding: 0 6px;
-  }
-  .byline span {
-    display: inline;
   }
   .explorer {
     display: none;
@@ -2089,12 +2030,6 @@ a {
   }
   .header-actions {
     gap: 17px;
-  }
-  .byline {
-    display: flex;
-    font-size: 11px;
-    gap: 0;
-    padding: 0 6px;
   }
   .search-button {
     width: 30px;
@@ -2294,9 +2229,6 @@ a {
   }
 }
 @media (max-width: 400px) {
-  .byline .byline-prefix {
-    display: none;
-  }
 }
 @media (max-width: 359px) {
   .disassembly-label {
@@ -2938,32 +2870,15 @@ a {
   }
 }
 @media (max-width: 600px) {
-  /* Three equal-ish thirds stop working once the right-hand buttons are
-     wider than a third of a phone: they spill left over the byline and
-     cover "Toggle systems", the only way into the navigation. The outer
-     columns take what their contents need and the byline gets the rest. */
   .topbar {
     grid-template-columns: auto minmax(0, 1fr) auto;
     padding-inline: 12px;
     gap: 6px;
   }
-  .byline {
-    justify-self: center;
-    min-width: 0;
-    max-width: 100%;
-    overflow: hidden;
-  }
-  .byline-text {
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
   .brand {
     gap: 0;
   }
   .brand > span:last-child {
-    display: none;
-  }
-  .byline > svg {
     display: none;
   }
   .header-actions {
@@ -3307,37 +3222,9 @@ a {
   }
 }
 
-/* Header chips at narrower widths. Feedback always keeps a label (a phone
-   is where a mistake is most often spotted), shortened only on phones. The
-   other chips give up their labels first, then the GitHub byline gives up
-   its words. */
+/* Feedback retains a short label on phones. */
 .info-button.chip {
   color: #dde1e6;
-}
-@media (max-width: 900px) {
-  /* The long Feedback label needs the room: the byline becomes just the
-     GitHub mark, in a chip of its own. The words stay in the accessibility
-     tree, so the link keeps its name. */
-  .byline {
-    justify-self: start;
-    width: 34px;
-    height: 34px;
-    padding: 0;
-    justify-content: center;
-  }
-  .byline > svg {
-    display: block;
-    width: 15px;
-    height: 15px;
-  }
-  .byline-text {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-  }
 }
 /* The full label on wide screens, a short one on phones. */
 .feedback-button .label-short {
@@ -3371,12 +3258,6 @@ a {
   }
   .feedback-button .label-short {
     display: inline;
-  }
-}
-@media (max-width: 359px) {
-  /* No room for it beside Feedback; the About panel links the source. */
-  .byline {
-    display: none;
   }
 }
 @media (max-width: 359px) {

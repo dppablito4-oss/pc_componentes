@@ -143,7 +143,9 @@ export default function Home() {
         'workbench' +
         (building
           ? ' build-workbench'
-          : (selected ? ' has-selection' : '') + (logical ? ' logical' : ''))
+          : ' explorer-workbench' +
+            (selected ? ' has-selection' : '') +
+            (logical ? ' logical' : ''))
       }
     >
       {building ? (
@@ -170,6 +172,7 @@ export default function Home() {
         </Suspense>
       ) : (
         <>
+          <div className="stage-atmosphere" aria-hidden="true" />
           <Topbar
             layers={layers}
             onReset={explorer.reset}
