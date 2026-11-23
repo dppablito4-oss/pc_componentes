@@ -2,14 +2,14 @@
 [![Ownit](https://ownit.ownit-worker.workers.dev/badge/Yoosseph/pc-anatomy.svg)](https://ownit.ownit-worker.workers.dev/Yoosseph/pc-anatomy)
 [![CI](https://github.com/Yoosseph/pc-anatomy/actions/workflows/ci.yml/badge.svg)](https://github.com/Yoosseph/pc-anatomy/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/github/license/Yoosseph/pc-anatomy)](LICENSE)
-[![Live demo](https://img.shields.io/website?url=https%3A%2F%2Fpc-anatomy.com&label=demo)](https://pc-anatomy.com/)
+[![Live demo](https://img.shields.io/website?url=https%3A%2F%2Fpc.sypablitodp.site&label=demo)](https://pc.sypablitodp.site/)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D22.13-339933?logo=node.js&logoColor=white)](#quick-start)
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![three.js](https://img.shields.io/badge/three.js-000000?logo=threedotjs&logoColor=white)](https://threejs.org/)
 
 PC Anatomy is an open-source 3D explorer that takes a desktop computer apart from the assembled ATX tower down to a single GPU streaming multiprocessor, and a DDR5 memory module down to the transistor and capacitor that hold one bit.
 
-## [**Explore the live demo →**](https://pc-anatomy.com/)
+## [**Explore the live demo →**](https://pc.sypablitodp.site/)
 
 Ideas worth building are collected on the [**roadmap and Kanban board →**](https://github.com/users/Yoosseph/projects/1). If you would like to contribute but have nothing particular in mind, start there: the Backlog column holds the suggestions and feedback waiting to be picked up.
 
@@ -108,7 +108,7 @@ Descending into a part rebuilds it at its own scale with its own timeline, so th
 
 ## The interface
 
-The rail on the left carries the scale tree and per-system visibility. The GPU menu holds five cards, the RTX 5090, Radeon RX 9070 XT, Arc B580, RTX 5060 Ti and RTX 5060, each with its own dropdown of scales. The Memory menu holds the installed DDR5 module and a DDR4 module from the same line, so the two generations can be taken apart side by side or compared in the comparison workbench. The Power supply menu lists five TUF Gaming units, from a 650W Bronze with fixed cables to a 1200W Gold with modular sockets; the tower carries the 1000W Gold, the supply ASUS recommends for its RTX 5090. The bar along the bottom is the disassembly timeline, with the **Auto** key at its left-hand end, the named phases above the slider, and a reset on the right. Left-click an explorable component to open it; right-click to inspect it and use the detail, hide, isolate and focus controls. On a touch screen, a tap shows the component's card and its **Take apart** button opens it. At 100% every laid-out part carries its name, and tapping a name describes it. Hidden components remain available from the stage tracker until they are restored, the scale changes, or the explorer is reset. The **Airflow** switch beside the camera views draws the path the air takes, cool where it enters and warm where it leaves, and it fades as soon as the disassembly slider moves. It starts on wherever there are fans except on the complete machine, where the case is closed and the switch is there to turn it on. The corner expand control toggles browser fullscreen. The address bar follows you: a link such as `https://pc-anatomy.com/?scale=sm` opens straight on the RTX 5090's streaming multiprocessor, `&part=` describes a part, `&open=` sets the disassembly, and the back button climbs back out.
+The rail on the left carries the scale tree and per-system visibility. The GPU menu holds five cards, the RTX 5090, Radeon RX 9070 XT, Arc B580, RTX 5060 Ti and RTX 5060, each with its own dropdown of scales. The Memory menu holds the installed DDR5 module and a DDR4 module from the same line, so the two generations can be taken apart side by side or compared in the comparison workbench. The Power supply menu lists five TUF Gaming units, from a 650W Bronze with fixed cables to a 1200W Gold with modular sockets; the tower carries the 1000W Gold, the supply ASUS recommends for its RTX 5090. The bar along the bottom is the disassembly timeline, with the **Auto** key at its left-hand end, the named phases above the slider, and a reset on the right. Left-click an explorable component to open it; right-click to inspect it and use the detail, hide, isolate and focus controls. On a touch screen, a tap shows the component's card and its **Take apart** button opens it. At 100% every laid-out part carries its name, and tapping a name describes it. Hidden components remain available from the stage tracker until they are restored, the scale changes, or the explorer is reset. The **Airflow** switch beside the camera views draws the path the air takes, cool where it enters and warm where it leaves, and it fades as soon as the disassembly slider moves. It starts on wherever there are fans except on the complete machine, where the case is closed and the switch is there to turn it on. The corner expand control toggles browser fullscreen. The address bar follows you: a link such as `https://pc.sypablitodp.site/?scale=sm` opens straight on the RTX 5090's streaming multiprocessor, `&part=` describes a part, `&open=` sets the disassembly, and the back button climbs back out.
 
 | Workbench                                                                                                              | On a phone                                                                                                                                               |
 | ---------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -190,9 +190,9 @@ beside another in the comparison workbench.
 PC Anatomy requires Node.js 24.
 
 ```bash
-git clone https://github.com/Yoosseph/pc-anatomy.git
-cd pc-anatomy
-npm install
+git clone https://github.com/dppablito4-oss/pc_componentes.git
+cd pc_componentes
+npm ci
 npm run dev
 ```
 
@@ -205,6 +205,12 @@ npm start
 
 The explorer is entirely static. The production output is written to `dist/` and needs no backend.
 The one exception is the feedback form, described next, and the site works without it.
+
+## GitHub Pages
+
+The [Pages workflow](.github/workflows/pages.yml) builds and publishes `dist/` on pushes to `main`. The custom domain is `pc.sypablitodp.site`. Its `pc` CNAME points to `dppablito4-oss.github.io` and the repository's Pages source is GitHub Actions.
+
+The Pages build uses relative asset paths and links the feedback button to [this repository's issues](https://github.com/dppablito4-oss/pc_componentes/issues/new).
 
 ## Feedback form
 
@@ -226,13 +232,13 @@ The function also refuses other origins (403), anything but JSON (415), bodies o
 
 ## Search appearance
 
-The public URL is `https://pc-anatomy.com/`. The HTML entry includes a canonical URL, descriptive title, social preview metadata, and WebSite / WebApplication structured data. `public/guide/index.html` is a readable hardware guide that works without JavaScript and links back to the explorer.
+The public URL is `https://pc.sypablitodp.site/`. The HTML entry includes a canonical URL, descriptive title, social preview metadata, and WebSite / WebApplication structured data. `public/guide/index.html` is a readable hardware guide that works without JavaScript and links back to the explorer.
 
 Every scale and part has its own address, and `public/sitemap.xml` lists them all; regenerate it with `node --experimental-strip-types scripts/generate-sitemap.mjs` after adding scales or parts. The canonical link follows the place being shown.
 
 Deploy the entire `dist/` directory, including `guide/`, `robots.txt`, `sitemap.xml`, and the icon files. Serve `/guide/` from its own `index.html` before applying any single-page-app fallback. If the hostname changes, update the canonical and social URLs in both HTML pages, the structured data, and the sitemap and robots files together.
 
-After deployment, submit `https://pc-anatomy.com/sitemap.xml` in Google Search Console and request indexing of the homepage and guide. Indexing, favicon display, and ranking are decided by Google and may take time after a recrawl. Do not add fabricated ratings or keyword stuffing.
+After deployment, submit `https://pc.sypablitodp.site/sitemap.xml` in Google Search Console and request indexing of the homepage and guide. Indexing, favicon display, and ranking are decided by Google and may take time after a recrawl. Do not add fabricated ratings or keyword stuffing.
 
 The browser and search icons are derived from `public/favicon.svg`. Run `node scripts/generate-icons.mjs` to regenerate the PNG and multi-resolution ICO variants (uses Playwright and Microsoft Edge). `public/pc-assembled.png` is a capture of the actual model; `public/social-preview.png` is its sharing card.
 

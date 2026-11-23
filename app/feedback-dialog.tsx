@@ -7,7 +7,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
-import { CONTACT_ENDPOINT, NEW_ISSUE } from './links';
+import { CONTACT_ENDPOINT, GITHUB_PAGES, NEW_ISSUE } from './links';
 import {
   EMPTY_DRAFT,
   KIND_LABELS,
@@ -83,10 +83,21 @@ export default function FeedbackDialog({ open, onOpenChange, context }: Props) {
       <DialogContent className="about-dialog feedback-dialog">
         <DialogTitle>Send feedback</DialogTitle>
         <DialogDescription>
-          Spotted a mistake, have an idea, or want to work together on PC
-          Anatomy? Tell me here.
+          {GITHUB_PAGES
+            ? 'Share a suggestion or report a problem in the GitHub repository.'
+            : 'Spotted a mistake, have an idea, or want to work together on PC Anatomy? Tell me here.'}
         </DialogDescription>
-        {status === 'sent' ? (
+        {GITHUB_PAGES ? (
+          <a
+            className="feedback-submit"
+            href={NEW_ISSUE}
+            target="_blank"
+            rel="noreferrer"
+          >
+            Open a GitHub issue
+            <ArrowUpRight size={15} />
+          </a>
+        ) : status === 'sent' ? (
           <div className="feedback-done">
             <output>
               Thank you, your message was sent.

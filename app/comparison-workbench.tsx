@@ -31,6 +31,7 @@ import ComparisonPicker from './comparison-picker';
 import ComparisonViewer from './comparison-viewer';
 import ComparisonSpecs from './comparison-specs';
 import Disassembly from './disassembly';
+import { EXPLORER } from './links';
 import { useDisassemblyPlayback } from './use-disassembly-playback';
 import './comparison.css';
 
@@ -139,7 +140,7 @@ export default function ComparisonWorkbench({ initialLevel, onExit }: Props) {
       data-active-side={state.activeSide}
     >
       <header className="comparison-topbar">
-        <a className="comparison-brand" href="/" aria-label="PC Anatomy">
+        <a className="comparison-brand" href={EXPLORER} aria-label="PC Anatomy">
           <Cpu size={20} aria-hidden="true" />
           <strong>PC Anatomy</strong>
         </a>
