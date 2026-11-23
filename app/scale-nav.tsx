@@ -179,6 +179,7 @@ export default function ScaleNav({
   const systemBranches = branches(rootLevel);
   return (
     <div className="explore-section">
+      <h2 className="explorer-title">Explorador</h2>
       <button
         className="mobile-close"
         aria-label="Cerrar sistemas"
@@ -188,16 +189,12 @@ export default function ScaleNav({
       </button>
       <nav className="system-picker" aria-label="Elegir un equipo">
         {systemRoots.map((root) => {
-          const Icon = root === 'pc' ? Monitor : levelIcon[root];
           return (
             <button
               key={root}
               aria-pressed={root === rootLevel}
               onClick={() => onNavigate(root)}
             >
-              <span className="system-picker-head">
-                <Icon size={14} />
-              </span>
               <strong>
                 {root === 'pc'
                   ? 'Escritorio'
@@ -209,17 +206,17 @@ export default function ScaleNav({
           );
         })}
       </nav>
-      <button className="compare-button" onClick={onCompare}>
-        <GitCompareArrows size={16} />
-        <span>
-          <strong>Comparar componentes</strong>
-        </span>
-        <ChevronRight size={14} />
-      </button>
       <button className="compare-button build-button" onClick={onBuild}>
         <Wrench size={16} />
         <span>
           <strong>Arma tu PC</strong>
+        </span>
+        <ChevronRight size={14} />
+      </button>
+      <button className="compare-button" onClick={onCompare}>
+        <GitCompareArrows size={16} />
+        <span>
+          <strong>Comparar componentes</strong>
         </span>
         <ChevronRight size={14} />
       </button>

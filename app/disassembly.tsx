@@ -12,6 +12,7 @@ type Props = {
   onToggleAuto: () => void;
   onSetExplode: (value: number) => void;
   onReset: () => void;
+  compact?: boolean;
   sectionLabel?: string;
   title?: string;
   sliderLabel?: string;
@@ -26,6 +27,7 @@ export default function Disassembly({
   onToggleAuto,
   onSetExplode,
   onReset,
+  compact = false,
   sectionLabel = 'Controles de desmontaje',
   title,
   sliderLabel = 'Desmontar el modelo',
@@ -79,7 +81,11 @@ export default function Disassembly({
                 }
                 onClick={() => onSetExplode(Number(value))}
               >
-                {phaseEs[name] ?? name}
+                {compact && Number(value) === 0
+                  ? 'Montado'
+                  : compact && !logical
+                    ? 'Desmontaje'
+                    : (phaseEs[name] ?? name)}
               </button>
             ))}
         </div>

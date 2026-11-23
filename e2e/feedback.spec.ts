@@ -4,7 +4,7 @@ const MESSAGE = 'The RTX 5090 enables 170 SMs, the page says 172.';
 
 async function openForm(page: Page) {
   await page.goto('/');
-  const button = page.getByRole('button', { name: /^(Comentarios|Opinar)$/ });
+  const button = page.getByRole('button', { name: 'Comentarios', exact: true });
   await expect(button).toBeVisible();
   await button.click();
   await expect(
@@ -12,22 +12,19 @@ async function openForm(page: Page) {
   ).toBeVisible();
 }
 
-test('Feedback is the first header control, and clear of the others', async ({
+test('Feedback is the first header action and stays clear of the others', async ({
   page,
-}, testInfo) => {
+}) => {
   await page.goto('/');
   const actions = page.locator('.header-actions > *');
   await expect(page.locator('.topbar')).not.toContainText('Yoseph');
-  // The full label on desktop, "Feedback" alone on a phone.
-  await expect(actions.first()).toHaveAccessibleName(
-    testInfo.project.name === 'mobile' ? 'Opinar' : 'Comentarios',
-  );
+  await expect(actions.first()).toHaveAccessibleName('Comentarios');
   const feedback = (await actions.first().boundingBox())!;
   const viewport = page.viewportSize()!;
   expect(feedback.x).toBeGreaterThanOrEqual(0);
   expect(feedback.x + feedback.width).toBeLessThanOrEqual(viewport.width);
   const others = page.locator(
-    '.topbar .brand, .topbar .brand-caption, .header-actions > *:not(.feedback-button)',
+    '.topbar .brand, .topbar .search-button, .header-actions > *:not(.feedback-button)',
   );
   for (const other of await others.all()) {
     const box = await other.boundingBox();
@@ -89,7 +86,7 @@ test('a closed form keeps what was typed', async ({ page }) => {
   await page.getByLabel('Mensaje').fill(MESSAGE);
   await page.keyboard.press('Escape');
   await expect(page.getByRole('dialog')).toBeHidden();
-  await page.getByRole('button', { name: /^(Comentarios|Opinar)$/ }).click();
+  await page.getByRole('button', { name: 'Comentarios', exact: true }).click();
   await expect(page.getByLabel('Mensaje')).toHaveValue(MESSAGE);
 });
 

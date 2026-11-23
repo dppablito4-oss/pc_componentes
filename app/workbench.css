@@ -1,16 +1,8 @@
 :root {
-  font-family: 'Segoe UI', Arial, sans-serif;
-  color: #e4e7e9;
-  background: #0c0d0e;
   font-synthesis: none;
   color-scheme: dark;
-  --background: #0f1011;
-  --foreground: #eef0f1;
-  --primary: #79bfcc;
-  --accent: #79bfcc;
-  --accent-bright: #a1d9e2;
+  --primary: var(--accent);
   --accent-violet: #b497cf;
-  --accent-muted: #9dc5cc;
   /* One colour per kind of part, the same on every page: the scale menus,
      the visible systems, the detail panel, search, the comparison picker and
      the build workspace's slots (lib/palette.ts says which part takes which).
@@ -34,8 +26,6 @@
   --brand-msi: #ff4b55;
   --brand-gigabyte: #ff8f3f;
   --brand-asrock: #c9d0d8;
-  --muted: #232427;
-  --muted-foreground: #b3b5ba;
   --rail: 286px;
   --inspect: 330px;
   /* The notch, the rounded corners and the home indicator, as four lengths.
@@ -106,15 +96,6 @@ body {
 }
 body {
   margin: 0;
-  /* The stage gradient lives here rather than on .workbench so that it also
-     fills the safe-area margins. Otherwise the rounded corners of a phone
-     screen show a seam in landscape. */
-  background: radial-gradient(
-    ellipse at 62% 45%,
-    #1b1d1e 0%,
-    #0f1011 44%,
-    #070808 80%
-  );
 }
 button,
 input,
@@ -249,12 +230,12 @@ a {
 .brand small {
   display: block;
   letter-spacing: 1.7px;
-  font: 9px monospace;
+  font: 9px var(--ui-mono);
   color: #8d9097;
   margin-top: 3px;
 }
 .header-specimen {
-  font: 11px monospace;
+  font: 11px var(--ui-mono);
   letter-spacing: 1px;
   color: #bbbdc1;
   display: flex;
@@ -296,7 +277,7 @@ a {
   border-radius: 3px;
   color: #898d94;
   margin-left: 26px;
-  font: 12px monospace;
+  font: 12px var(--ui-mono);
 }
 .info-button {
   color: #aeb1b6;
@@ -335,7 +316,7 @@ a {
   flex-direction: column;
 }
 .section-heading {
-  font: 600 9.5px monospace;
+  font: 600 9.5px var(--ui-mono);
   letter-spacing: 1.4px;
   color: #848992;
   display: flex;
@@ -344,9 +325,7 @@ a {
   margin: 0 0 8px;
 }
 .section-heading button {
-  font:
-    500 11px 'Segoe UI',
-    sans-serif;
+  font: 500 11px var(--ui-sans);
   letter-spacing: 0;
   color: #b8bdc4;
   padding: 2px 6px;
@@ -385,7 +364,7 @@ a {
     color 0.14s ease;
 }
 .scale-navigation > button > span {
-  font: 600 9.5px monospace;
+  font: 600 9.5px var(--ui-mono);
   color: color-mix(in srgb, var(--hue, #6c7078) 50%, #5f636b);
 }
 .scale-navigation > button > svg {
@@ -624,7 +603,7 @@ a {
   display: flex;
   align-items: center;
   gap: 8px;
-  font: 11px monospace;
+  font: 11px var(--ui-mono);
   color: #7f838c;
   margin-top: 0;
   flex-wrap: wrap;
@@ -717,7 +696,7 @@ a {
   padding: 4px;
 }
 .view-controls button {
-  font: 10px monospace;
+  font: 10px var(--ui-mono);
   letter-spacing: 0.5px;
   padding: 7px 11px;
   border-radius: 3px;
@@ -760,7 +739,7 @@ a {
   box-shadow: 0 8px 24px #0004;
 }
 .airflow-toggle small {
-  font: 10px monospace;
+  font: 10px var(--ui-mono);
   letter-spacing: 0.5px;
   color: #79838a;
 }
@@ -824,7 +803,7 @@ a {
   font-weight: 500;
 }
 .power-heading > span {
-  font: 8px monospace;
+  font: 8px var(--ui-mono);
   color: #cba878;
   letter-spacing: 1px;
 }
@@ -883,7 +862,7 @@ a {
   align-items: baseline;
 }
 .power-legend strong {
-  font: 11px monospace;
+  font: 11px var(--ui-mono);
 }
 .power-legend small {
   font-size: 9px;
@@ -1130,7 +1109,7 @@ a {
 }
 .disassembly-label span {
   display: block;
-  font: 8px monospace;
+  font: 8px var(--ui-mono);
   letter-spacing: 0.65px;
   color: #82868e;
   margin-top: 6px;
@@ -1268,7 +1247,7 @@ a {
   filter: drop-shadow(0 1px 0 #ffffff4d);
 }
 .disassembly .play span {
-  font: 700 9px monospace;
+  font: 700 9px var(--ui-mono);
   letter-spacing: 1.2px;
   text-transform: uppercase;
   color: #06272e;
@@ -1351,7 +1330,7 @@ a {
   background: #6a6e75;
 }
 .disassembly output {
-  font: 20px monospace;
+  font: 20px var(--ui-mono);
   color: var(--accent-bright);
   min-width: 48px;
   text-align: right;
@@ -1447,7 +1426,7 @@ a {
 .hover-label span {
   display: block;
   margin-top: 3px;
-  font: 9px monospace;
+  font: 9px var(--ui-mono);
   color: #8c9097;
   letter-spacing: 0.5px;
 }
@@ -1498,7 +1477,7 @@ a {
   gap: 7px;
   padding: 3px 8px 3px 7px;
   border-radius: 4px;
-  font: 10px monospace;
+  font: 10px var(--ui-mono);
   letter-spacing: 0.8px;
   text-transform: uppercase;
   color: var(--hue);
@@ -1523,7 +1502,7 @@ a {
   color: #ffffff;
 }
 .instance-label {
-  font: 9px monospace;
+  font: 9px var(--ui-mono);
   letter-spacing: 1px;
   color: color-mix(in srgb, var(--hue, #9dc5cc) 70%, #9aa1a8);
   margin: 12px 0 25px;
@@ -1545,7 +1524,7 @@ a {
 .purpose h3 {
   margin: 0 0 7px;
   color: var(--hue, var(--accent-bright));
-  font: 10px monospace;
+  font: 10px var(--ui-mono);
   letter-spacing: 1.1px;
   text-transform: uppercase;
 }
@@ -1553,7 +1532,7 @@ a {
   margin: 0;
 }
 .quantity {
-  font: 12px monospace;
+  font: 12px var(--ui-mono);
   color: color-mix(in srgb, var(--hue, #b7dce1) 55%, #dfe3e6);
   padding: 18px 0;
   border-top: 1px solid #414348;
@@ -1754,7 +1733,7 @@ a {
 .search-hint {
   display: flex;
   justify-content: space-between;
-  font: 10px monospace;
+  font: 10px var(--ui-mono);
   color: #848890;
   border-top: 1px solid #44474c;
   padding-top: 13px;
@@ -2513,7 +2492,7 @@ a {
     color 0.14s ease;
 }
 .branch-head > span {
-  font: 600 9.5px monospace;
+  font: 600 9.5px var(--ui-mono);
   color: color-mix(in srgb, var(--hue) 50%, #5f636b);
   flex: none;
 }
@@ -3035,7 +3014,7 @@ a {
   }
 }
 
-/* Build your own PC: the entry under Compare. The workspace it opens has
+/* Build your own PC. The workspace it opens has
    its own sheet, build.css. */
 .build-button {
   --tint: #e0a865;
@@ -3278,22 +3257,6 @@ a {
   gap: 4px;
 }
 
-:root {
-  --workspace-surface: #141b18;
-  --workspace-panel: #19221e;
-  --workspace-line: #35443d;
-  --workspace-muted: #afbeb5;
-  --background: #101613;
-  --foreground: #ecf2ed;
-  --accent: #75d9a0;
-  --accent-bright: #a4ebbe;
-  --primary: var(--accent);
-}
-
-body {
-  background: #101613;
-}
-
 .topbar,
 .comparison-topbar,
 .build-topbar,
@@ -3318,15 +3281,15 @@ body {
 }
 
 .viewport {
-  background-image: radial-gradient(#8aa4982c 1px, transparent 1px);
+  background-image: radial-gradient(#9ca3af24 1px, transparent 1px);
   background-size: 22px 22px;
   background-position: center;
   border-radius: 12px;
 }
 
 .brand-icon {
-  background: #24362c;
-  border: 1px solid #3f644e;
+  background: var(--accent-soft);
+  border: 1px solid var(--border-active);
   color: var(--accent-bright);
 }
 
@@ -3346,7 +3309,7 @@ body {
 
 .stage-heading h1,
 .detail-panel [data-slot='sheet-title'] {
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: var(--ui-sans);
   color: var(--foreground);
   letter-spacing: -0.035em;
   overflow-wrap: anywhere;
@@ -3359,7 +3322,7 @@ body {
 
 .disassembly .play:not(.running) {
   background: var(--accent);
-  border-color: #a2e4bb;
+  border-color: var(--border-active);
   box-shadow: none;
 }
 
@@ -3389,7 +3352,7 @@ body {
 
 .stage-history button:hover:not(:disabled) {
   color: var(--accent-bright);
-  background: #25382e;
+  background: var(--bg-hover);
 }
 
 .stage-history button:disabled {
@@ -3405,7 +3368,7 @@ body {
 .part-english {
   display: block;
   margin: 4px 0 0;
-  font: 500 12px/1.4 'Segoe UI', Arial, sans-serif;
+  font: 500 12px/1.4 var(--ui-sans);
   color: var(--workspace-muted);
   overflow-wrap: anywhere;
 }

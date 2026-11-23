@@ -94,7 +94,7 @@ export default function StageTools({
 
   return (
     <div className="stage-tools">
-      <div className="view-controls" aria-label="Controles de cámara">
+      <fieldset className="view-controls" aria-label="Controles de cámara">
         {views.map((option, i) => {
           const active = flattened ? option === 'top' : view === option;
           const name = 'Vista ' + viewLabels[i].toLowerCase();
@@ -130,74 +130,79 @@ export default function StageTools({
         >
           {fullscreen ? <Minimize size={15} /> : <Maximize size={15} />}
         </button>
-      </div>
-      {fans && (
-        <button
-          className={'airflow-toggle' + (showingAirflow ? ' active' : '')}
-          title={
-            showingAirflow
-              ? 'Ocultar el recorrido del aire'
-              : assembled
-                ? 'Mostrar el recorrido del aire por el equipo'
-                : 'Mostrar flujo de aire — it draws on the assembled machine'
-          }
-          aria-label={
-            showingAirflow ? 'Ocultar flujo de aire' : 'Mostrar flujo de aire'
-          }
-          aria-pressed={showingAirflow}
-          onClick={onToggleAirflow}
-        >
-          <Wind size={15} />
-          <span>Aire</span>
-          <small>{showingAirflow ? 'Sí' : 'No'}</small>
-        </button>
-      )}
-      {children}
-      {hiddenComponents.length > 0 && (
-        <div className="hidden-tracker">
+      </fieldset>
+      <div className="stage-options">
+        {fans && (
           <button
-            className="hidden-tracker-toggle"
-            aria-expanded={hiddenMenuOpen}
-            aria-controls="hidden-components-menu"
-            onClick={onToggleHiddenMenu}
+            className={'airflow-toggle' + (showingAirflow ? ' active' : '')}
+            title={
+              showingAirflow
+                ? 'Ocultar el recorrido del aire'
+                : assembled
+                  ? 'Mostrar el recorrido del aire por el equipo'
+                  : 'Mostrar flujo de aire en la vista montada'
+            }
+            aria-label={
+              showingAirflow ? 'Ocultar flujo de aire' : 'Mostrar flujo de aire'
+            }
+            aria-pressed={showingAirflow}
+            onClick={onToggleAirflow}
           >
-            <EyeOff size={15} />
-            <span>
-              {hiddenComponents.length} componente oculto
-              {hiddenComponents.length === 1 ? '' : 's'}
-            </span>
-            <ChevronDown size={14} />
+            <Wind size={15} />
+            <span>Aire</span>
+            <small>{showingAirflow ? 'Sí' : 'No'}</small>
           </button>
-          {hiddenMenuOpen && (
-            <div className="hidden-components-menu" id="hidden-components-menu">
-              <div className="hidden-menu-heading">
-                <strong>Componentes ocultos en este módulo</strong>
-                <button onClick={onClearHidden}>Mostrar todo</button>
-              </div>
-              <ul>
-                {hiddenComponents.map((component) => (
-                  <li
-                    key={component.id}
-                    style={hueStyle(hueOfSystem(component.category))}
-                  >
-                    <i />
-                    <span title={bilingualPartName(component)}>
-                      {partNameEs(component, true)}
-                    </span>
-                    <button
-                      aria-label={`Mostrar ${partNameEs(component)}`}
-                      onClick={() => onUnhide(component.id)}
+        )}
+        {children}
+        {hiddenComponents.length > 0 && (
+          <div className="hidden-tracker">
+            <button
+              className="hidden-tracker-toggle"
+              aria-expanded={hiddenMenuOpen}
+              aria-controls="hidden-components-menu"
+              onClick={onToggleHiddenMenu}
+            >
+              <EyeOff size={15} />
+              <span>
+                {hiddenComponents.length} componente oculto
+                {hiddenComponents.length === 1 ? '' : 's'}
+              </span>
+              <ChevronDown size={14} />
+            </button>
+            {hiddenMenuOpen && (
+              <div
+                className="hidden-components-menu"
+                id="hidden-components-menu"
+              >
+                <div className="hidden-menu-heading">
+                  <strong>Componentes ocultos en este módulo</strong>
+                  <button onClick={onClearHidden}>Mostrar todo</button>
+                </div>
+                <ul>
+                  {hiddenComponents.map((component) => (
+                    <li
+                      key={component.id}
+                      style={hueStyle(hueOfSystem(component.category))}
                     >
-                      <Eye size={14} />
-                      Show
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
-      )}
+                      <i />
+                      <span title={bilingualPartName(component)}>
+                        {partNameEs(component, true)}
+                      </span>
+                      <button
+                        aria-label={`Mostrar ${partNameEs(component)}`}
+                        onClick={() => onUnhide(component.id)}
+                      >
+                        <Eye size={14} />
+                        Mostrar
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
       {fullscreenError && (
         <output className="fullscreen-error">{fullscreenError}</output>
       )}

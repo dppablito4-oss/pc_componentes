@@ -348,7 +348,7 @@ subsystems stop touching.
 | `app/feedback.ts`, `api/contact.ts` | The feedback form. `feedback.ts` holds the form's rules without React (limits, payload, what each response means); `api/contact.ts` is the only server code, a Vercel Function that validates a message and emails it through Resend. It reads its key and inbox from environment variables and imports nothing from the project, so the two files each keep a copy of the limits and `tests/feedback.test.ts` checks they agree. |
 | `app/viewer.tsx` | The React ↔ three.js bridge: lazy scene load, the loading line, hover label, names on the laid-out parts, error state. |
 | `app/links.ts` | Destinations used by more than one panel. |
-| `app/globals.css`, `app/workbench.css` | The visual direction, desktop through phone. |
+| `app/globals.css`, `app/workbench.css`, `app/explorer-presentation.css` | Global color and type tokens, shared styles, and the floating explorer HUD. |
 | `tests/*.test.ts` | 193 tests: catalogue integrity, layout, picking, geometry presence, airflow, power flow, the case, the memory dive, comparison catalogue/state/framing behaviour, the part colours, build-workspace checks and every board, card, cooler, module count, drive and supply in the tower, links, taps, labels and the engine staying out of the entry chunk, and the feedback function and form. |
 | `scripts/generate-icons.mjs` | Rasterises `public/favicon.svg` into PNG and ICO variants. Uses Playwright and Edge. |
 | `scripts/generate-reference-index.mjs` | Regenerates `docs/component-references.md` from the catalogue. Run it after changing citations. |
@@ -483,11 +483,10 @@ zero, heaped at the origin.
 ## The interface layer
 
 `app/page.tsx` is composition and nothing else: it renders the panels in order
-and wires them to `useExplorer`. It holds only the state no panel owns — whether
-the comparison workbench is open, whether the search palette, about dialog
-and feedback form are open, and the part count the viewer reports. Whether the build workspace is
-open is explorer state (`workspace`), because it is part of the address and
-the back button leaves it.
+and wires them to `useExplorer`. It owns the HUD's accent and panel visibility,
+the comparison workbench and dialog visibility, and the part count the viewer
+reports. Whether the build workspace is open is explorer state (`workspace`),
+because it is part of the address and the back button leaves it.
 
 `app/use-explorer.ts` owns everything else about the current view and exposes it
 as named moves rather than state patches. A panel calls `navigate`, `dive`,
@@ -495,6 +494,13 @@ as named moves rather than state patches. A panel calls `navigate`, `dive`,
 itself. State that only one panel cares about lives in that panel — which system
 is unfolded is inside `systems-list.tsx`, whether the window is fullscreen is
 inside `stage-tools.tsx`.
+
+The explorer canvas fills the window. The transparent `.viewport-frame`
+tracks the space between the HUD overlays, and the scene uses it to shift the
+camera projection, fit the model, and place inventory labels. UI and picking
+coordinates still use the full canvas. The header's accent is presentation
+state, shared by the CSS tokens and the scene's selection highlight, and is
+independent of the place encoded in the URL.
 
 These interaction decisions are settled, and re-opening them has been tried:
 

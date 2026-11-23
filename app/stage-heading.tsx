@@ -85,17 +85,6 @@ export default function StageHeading({
                   : 'Desmontaje'
                 : levelTitleEs(level)}
           </h1>
-          <span className="stage-mode">
-            {explode === 100
-              ? 'Piezas separadas'
-              : explode === 0
-                ? 'Vista montada'
-                : logical
-                  ? 'Vista expandida'
-                  : 'Vista explotada'}
-            {' · '}
-            {levelNameEs(level)}
-          </span>
         </div>
         {path.length > 1 && (
           <div className="stage-meta">

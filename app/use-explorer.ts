@@ -137,6 +137,17 @@ export function useExplorer() {
     setLayers(false);
   }, [stopDisassembly]);
 
+  const resetView = () => {
+    stopDisassembly();
+    setState((s) => ({
+      ...s,
+      explode: 0,
+      view: 'perspective',
+      focusRevision: 0,
+      cameraRevision: s.cameraRevision + 1,
+    }));
+  };
+
   // Physical disassembly is one continuous move owned by the scene: the stage clears
   // around the part you clicked while the camera closes in on it, and when the
   // scene reports the stage is clear we swap in the deeper scale, which then
@@ -240,10 +251,10 @@ export function useExplorer() {
       focusRevision: 0,
     }));
 
-  const toggleAllCategories = () =>
+  const hideAllCategories = () =>
     setState((s) => ({
       ...s,
-      visible: s.visible.length === categories.length ? [] : [...categories],
+      visible: [],
       hidden: [],
       selection: null,
       isolated: false,
@@ -438,6 +449,7 @@ export function useExplorer() {
     navigate,
     goTo,
     reset,
+    resetView,
     dive,
     arrive,
     choose,
@@ -445,7 +457,7 @@ export function useExplorer() {
     setExplode,
     toggleAuto,
     toggleCategory,
-    toggleAllCategories,
+    hideAllCategories,
     setConceptVisible,
     showEverything,
     unhide,

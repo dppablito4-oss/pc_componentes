@@ -1,5 +1,13 @@
 'use client';
-import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
+import {
+  lazy,
+  Suspense,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { EyeOff } from 'lucide-react';
 import { airflowShown } from '@/lib/airflow-policy';
 import { levelPath, levels } from '@/lib/levels';
@@ -8,7 +16,8 @@ import { useFirstVisitHint } from './use-first-visit-hint';
 import { useBuildWorkspace } from './use-build-workspace';
 import Viewer from './viewer';
 import PerformanceTip from './performance-tip';
-import Topbar from './topbar';
+import Topbar, { type Accent } from './topbar';
+import { useIsMobile } from '@/hooks/use-mobile';
 import ScaleNav from './scale-nav';
 import SystemsList from './systems-list';
 import StageHeading from './stage-heading';
@@ -47,9 +56,37 @@ export default function Home() {
     // to say to the reader, and saying the wrong one was what put "No
     // structures visible" on screen for the whole of a cold load.
     [count, setCount] = useState<number | null>(null);
+  const mobile = useIsMobile(960);
+  const [desktopLayers, setDesktopLayers] = useState(true);
+  const [inspectorOverride, setInspectorOverride] = useState<{
+    selection: typeof state.selection;
+    open: boolean;
+  } | null>(null);
+  const [accent, setAccent] = useState<Accent>('#F97316');
+  const explorerOpen = mobile ? layers : desktopLayers;
+  const inspectorOpen =
+    !(mobile && layers) &&
+    (inspectorOverride?.selection === state.selection
+      ? inspectorOverride.open
+      : Boolean(selected));
+
+  useLayoutEffect(() => {
+    const root = document.documentElement;
+    root.style.setProperty('--accent-primary', accent);
+    root.toggleAttribute('data-custom-accent', accent !== '#F97316');
+    return () => {
+      root.style.removeProperty('--accent-primary');
+      root.removeAttribute('data-custom-accent');
+    };
+  }, [accent]);
+
   const building = state.workspace === 'build';
   const workspace = useBuildWorkspace(explorer);
   const { pointAt } = workspace;
+  const viewerState = useMemo(
+    () => ({ ...workspace.viewerState, selectionAccent: accent }),
+    [workspace.viewerState, accent],
+  );
   const drawn = count !== null;
   useEffect(() => {
     if (!drawn) return;
@@ -97,7 +134,10 @@ export default function Home() {
         event.preventDefault();
         setSearch(true);
       }
-      if (event.key === 'Escape') choose(null);
+      if (event.key === 'Escape') {
+        choose(null);
+        setInspectorOverride(null);
+      }
       if (event.key === 'Backspace') {
         const currentPath = levelPath(state.level);
         if (currentPath.length > 1) {
@@ -144,7 +184,8 @@ export default function Home() {
         (building
           ? ' build-workbench'
           : ' explorer-workbench' +
-            (selected ? ' has-selection' : '') +
+            (explorerOpen ? ' explorer-open' : '') +
+            (inspectorOpen ? ' inspector-open' : '') +
             (logical ? ' logical' : ''))
       }
     >
@@ -172,29 +213,44 @@ export default function Home() {
         </Suspense>
       ) : (
         <>
-          <div className="stage-atmosphere" aria-hidden="true" />
           <Topbar
-            layers={layers}
+            layers={explorerOpen}
+            inspector={inspectorOpen}
+            accent={accent}
+            onAccentChange={setAccent}
             onReset={explorer.reset}
-            onToggleLayers={() => explorer.setLayers(!layers)}
+            onToggleLayers={() => {
+              if (mobile) explorer.setLayers(!layers);
+              else setDesktopLayers((open) => !open);
+            }}
+            onToggleInspector={() => {
+              if (mobile) explorer.setLayers(false);
+              setInspectorOverride({
+                selection: state.selection,
+                open: !inspectorOpen,
+              });
+            }}
             onSearch={() => setSearch(true)}
             onAbout={() => setAbout(true)}
             onFeedback={() => setFeedback(true)}
           />
           <PerformanceTip ready={count !== null && count > 0} />
-          {layers && (
-            // Without this the drawer floats over a live 3-D view: a tap
-            // meant to dismiss it lands in the scene and selects whatever was
-            // behind it.
-            <button
-              className="drawer-scrim"
-              aria-label="Cerrar sistemas"
-              onClick={() => explorer.setLayers(false)}
-            />
-          )}
+          {mobile &&
+            layers && (
+              // Without this the drawer floats over a live 3-D view: a tap
+              // meant to dismiss it lands in the scene and selects whatever was
+              // behind it.
+              <button
+                className="drawer-scrim"
+                aria-label="Cerrar sistemas"
+                onClick={() => explorer.setLayers(false)}
+              />
+            )}
           <aside
-            className={'explorer' + (layers ? ' mobile-open' : '')}
-            aria-label="Visibilidad de sistemas"
+            className={'explorer' + (mobile && layers ? ' mobile-open' : '')}
+            id="explorer-panel"
+            aria-label="Explorador"
+            hidden={!explorerOpen}
           >
             <ScaleNav
               level={state.level}
@@ -212,7 +268,8 @@ export default function Home() {
               visible={state.visible}
               hidden={state.hidden}
               onToggleCategory={explorer.toggleCategory}
-              onToggleAll={explorer.toggleAllCategories}
+              onHideAll={explorer.hideAllCategories}
+              onShowAll={explorer.showEverything}
               onSetConceptVisible={explorer.setConceptVisible}
               onSelectConcept={selectResult}
             />
@@ -230,7 +287,7 @@ export default function Home() {
         </>
       )}
       <Viewer
-        state={workspace.viewerState}
+        state={viewerState}
         loading={count === null}
         onSelect={building ? pointAt : choose}
         onCount={setCount}
@@ -278,7 +335,8 @@ export default function Home() {
             playing={explorer.playing}
             onToggleAuto={explorer.toggleAuto}
             onSetExplode={explorer.setExplode}
-            onReset={explorer.reset}
+            onReset={explorer.resetView}
+            compact
           />
           {search && (
             <Suspense fallback={null}>
@@ -292,12 +350,19 @@ export default function Home() {
             </Suspense>
           )}
           <DetailPanel
+            open={inspectorOpen}
             selected={selected}
             selection={state.selection}
             opens={explorer.opens}
             level={state.level}
             isolated={state.isolated}
-            onClose={() => choose(null)}
+            onClose={() => {
+              setInspectorOverride({ selection: null, open: false });
+              choose(null);
+              document
+                .querySelector<HTMLElement>('[aria-controls="part-inspector"]')
+                ?.focus();
+            }}
             onSelectConcept={selectResult}
             onDive={explorer.dive}
             onIsolate={explorer.toggleIsolate}

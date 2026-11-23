@@ -2,11 +2,12 @@
 import { bilingualPartName } from '@/lib/locale-es';
 import { byId } from '@/lib/manifest';
 import { useState } from 'react';
-import type { ExplorerState, Selection } from '@/lib/explorer-state';
+import type { ViewerState } from '@/lib/scene';
+import type { Selection } from '@/lib/explorer-state';
 import type { PartLabel } from '@/lib/inventory-labels';
 import { useViewerEngine } from './use-viewer-engine';
 type Props = {
-  state: ExplorerState;
+  state: ViewerState;
   /** Nothing has been drawn yet. */
   loading: boolean;
   onSelect: (v: Selection | null, intent: 'open' | 'inspect') => void;
@@ -62,6 +63,7 @@ export default function Viewer({
         className="viewport"
         aria-label="Modelo interactivo de PC en 3D"
       >
+        <div className="viewport-frame" aria-hidden="true" />
         {labels.length > 0 && (
           <ul className="part-labels" aria-label="Piezas del inventario">
             {labels.map((label) => (

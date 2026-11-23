@@ -5,8 +5,8 @@ async function sideButton(page: Page, button: 'back' | 'forward') {
   if (!viewport) throw new Error('The viewer is outside the viewport');
   const session = await page.context().newCDPSession(page);
   const mouse = {
-    x: viewport.x + 30,
-    y: viewport.y + 30,
+    x: viewport.x + viewport.width / 2,
+    y: viewport.y + viewport.height / 2,
     button,
     clickCount: 1,
   };

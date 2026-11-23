@@ -223,15 +223,17 @@ export function fitCameraToBounds(
   size: T.Vector3,
   padding = 1,
   minimumDistance = 6,
+  frame = { width: 1, height: 1 },
 ) {
   bounds.getCenter(targetLook);
   bounds.getSize(size);
   direction.normalize();
   const radius = Math.max(size.length() / 2, 0.35);
-  const vertical = T.MathUtils.degToRad(camera.fov);
-  const horizontal = 2 * Math.atan(Math.tan(vertical / 2) * camera.aspect);
-  const distance =
-    (radius / Math.sin(Math.min(vertical, horizontal) / 2)) * padding;
+  const halfHeight = Math.tan(T.MathUtils.degToRad(camera.fov / 2));
+  const halfAngle = Math.atan(
+    halfHeight * Math.min(frame.height, camera.aspect * frame.width),
+  );
+  const distance = (radius / Math.sin(halfAngle)) * padding;
   targetPosition
     .copy(targetLook)
     .addScaledVector(direction, Math.max(minimumDistance, distance));

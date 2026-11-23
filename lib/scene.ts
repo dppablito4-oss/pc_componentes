@@ -51,6 +51,8 @@ import {
 const MOUSE_AIM = 8,
   TOUCH_AIM = 14;
 
+export type ViewerState = ExplorerState & { selectionAccent: string };
+
 export type SceneCallbacks = {
   select: (selection: Selection | null, intent: 'open' | 'inspect') => void;
   /** The isolate-and-close-in ramp has finished; open the deeper scale now. */
@@ -85,7 +87,7 @@ const modelKey = (state: ExplorerState) =>
 
 export function createViewer(
   host: HTMLDivElement,
-  initial: ExplorerState,
+  initial: ViewerState,
   callbacks: SceneCallbacks,
 ) {
   const runtime = createStageRuntime(host, callbacks.error);
@@ -114,8 +116,10 @@ export function createViewer(
     IN_SECONDS = 0.62;
   const ease = (t: number) => t * t * (3 - 2 * t);
   scene.add(model.root);
-  const selectedBox = new T.Box3Helper(new T.Box3(), 0xeab878),
+  const selectedBox = new T.Box3Helper(new T.Box3(), initial.selectionAccent),
     hoverBox = new T.Box3Helper(new T.Box3(), 0xc4d8e3);
+  const selectionMaterial = selectedBox.material as T.LineBasicMaterial;
+  selectionMaterial.toneMapped = false;
   selectedBox.visible = false;
   hoverBox.visible = false;
   scene.add(selectedBox, hoverBox);
@@ -137,6 +141,16 @@ export function createViewer(
   let fitDirty = true,
     colorsDirty = true,
     hoverPending = false;
+  const frameElement = host.querySelector<HTMLElement>('.viewport-frame');
+  const frame = { x: 0, y: 0, width: 1, height: 1 };
+  const frameScale = { width: 1, height: 1 };
+  const selectionTint = new T.Color();
+  const white = new T.Color(0xffffff);
+  function updateAccent(accent: string) {
+    selectionMaterial.color.set(accent);
+    selectionTint.copy(selectionMaterial.color).lerp(white, 0.45);
+  }
+  updateAccent(initial.selectionAccent);
   const colorBatches = new Set<T.InstancedMesh>();
   const activeTouches = new Set<number>(),
     selectionBounds = new T.Box3();
@@ -175,7 +189,7 @@ export function createViewer(
     // slider. The packing only depends on which pieces are on stage and on the
     // shape of the viewport, so it is redone when one of those changes and not
     // sixty times a second while the parts are in flight.
-    const aspect = host.clientWidth / host.clientHeight;
+    const aspect = frame.width / frame.height;
     const signature =
       state.level +
       '|' +
@@ -257,9 +271,7 @@ export function createViewer(
                     // level for something tall like a tower, or the lid is all
                     // you see.
                     defaultCameraDirection(size, cameraDirection);
-    // A selected part needs breathing room inside the smaller stage left by
-    // the detail panel. The old 0.8 multiplier cropped focused parts at every
-    // edge, even though the ordinary whole-model fit looked intentional.
+    // Keep focused parts clear of the floating controls.
     const padding =
       cameraProfile?.padding && !focus
         ? cameraProfile.padding
@@ -280,7 +292,7 @@ export function createViewer(
                 'ddr4banks',
                 'ddr4array',
                 'ddr4cell',
-              ].includes(state.level) && camera.aspect < 1
+              ].includes(state.level) && frame.width < frame.height
             ? 1.05
             : 0.8;
     fitCameraToBounds(
@@ -292,6 +304,7 @@ export function createViewer(
       v,
       padding,
       cameraProfile?.minimumDistance ?? (focus ? 3.2 : 6),
+      frameScale,
     );
   }
   function boxFor(p: Piece, target: T.Box3) {
@@ -422,13 +435,8 @@ export function createViewer(
     selectedBox.box.makeEmpty();
     for (const p of model.pieces) {
       if (p.batch && colorsDirty) {
-        color.set(
-          matches(p, state.selection)
-            ? '#ffd790'
-            : hovered === p
-              ? '#d3e9ff'
-              : '#ffffff',
-        );
+        if (matches(p, state.selection)) color.copy(selectionTint);
+        else color.set(hovered === p ? '#d3e9ff' : '#ffffff');
         p.batch.setColorAt(p.index!, color);
         colorBatches.add(p.batch);
       }
@@ -545,15 +553,21 @@ export function createViewer(
           concept: p.concept,
           instance: p.instance,
           name: partNameEs(byId[p.concept], true),
-          x: ((projected.x + 1) / 2) * w,
-          y: ((1 - projected.y) / 2) * h,
+          x: ((projected.x + 1) / 2) * w - frame.x,
+          y: ((1 - projected.y) / 2) * h - frame.y,
           size: Math.hypot(
             ((corner.x - projected.x) * w) / 2,
             ((corner.y - projected.y) * h) / 2,
           ),
         });
       }
-      next = placeLabels(candidates, w, h);
+      next = placeLabels(candidates, frame.width, frame.height).map(
+        (label) => ({
+          ...label,
+          left: label.left + frame.x,
+          top: label.top + frame.y,
+        }),
+      );
     }
     const signature = labelSignature(next);
     if (signature === labelsShown) return;
@@ -568,18 +582,41 @@ export function createViewer(
     render,
   );
   const wake = loop.wake;
+  let canvasWidth = 0,
+    canvasHeight = 0;
   const resize = () => {
     const w = host.clientWidth,
       h = host.clientHeight;
     if (!w || !h) return;
-    renderer.setSize(w, h);
-    camera.aspect = w / h;
-    camera.updateProjectionMatrix();
+    if (canvasWidth !== w || canvasHeight !== h) {
+      renderer.setSize(w, h);
+      canvasWidth = w;
+      canvasHeight = h;
+    }
+    Object.assign(frame, {
+      x: frameElement?.offsetLeft ?? 0,
+      y: frameElement?.offsetTop ?? 0,
+      width: frameElement?.clientWidth || w,
+      height: frameElement?.clientHeight || h,
+    });
+    frameScale.width = frame.width / w;
+    frameScale.height = frame.height / h;
+    // Shift the projection into the unobstructed area, leaving the canvas
+    // full-screen so rendering, picking, and orbiting all share its coordinates.
+    camera.setViewOffset(
+      w,
+      h,
+      (w - frame.width) / 2 - frame.x,
+      (h - frame.height) / 2 - frame.y,
+      w,
+      h,
+    );
     refresh();
     wake();
   };
   const observer = new ResizeObserver(resize);
   observer.observe(host);
+  if (frameElement) observer.observe(frameElement);
   function hit(e: { clientX: number; clientY: number }, radius = 0) {
     if (!model.root.visible) return null;
     const rect = renderer.domElement.getBoundingClientRect();
@@ -694,7 +731,9 @@ export function createViewer(
   refresh();
   resize();
   return {
-    update(next: ExplorerState) {
+    update(next: ViewerState) {
+      if (next.selectionAccent !== state.selectionAccent)
+        updateAccent(next.selectionAccent);
       hovered = null;
       callbacks.hover(null, 0, 0, false);
       const arriving = dive?.phase === 'out' && next.level !== state.level;

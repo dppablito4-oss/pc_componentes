@@ -35,7 +35,8 @@ type Props = {
   visible: Category[];
   hidden: string[];
   onToggleCategory: (category: Category) => void;
-  onToggleAll: () => void;
+  onHideAll: () => void;
+  onShowAll: () => void;
   onSetConceptVisible: (
     id: string,
     category: Category,
@@ -49,7 +50,8 @@ export default function SystemsList({
   visible,
   hidden,
   onToggleCategory,
-  onToggleAll,
+  onHideAll,
+  onShowAll,
   onSetConceptVisible,
   onSelectConcept,
 }: Props) {
@@ -62,11 +64,14 @@ export default function SystemsList({
         <span className="systems-title">
           <Eye size={13} aria-hidden="true" /> Sistemas visibles
         </span>
-        <button onClick={onToggleAll}>
-          {visible.length === categories.length
-            ? 'Ocultar todo'
-            : 'Mostrar todo'}
-        </button>
+        <div className="systems-actions">
+          {visible.length > 0 && (
+            <button onClick={onHideAll}>Ocultar todo</button>
+          )}
+          {(visible.length < categories.length || hidden.length > 0) && (
+            <button onClick={onShowAll}>Mostrar todo</button>
+          )}
+        </div>
       </div>
       <div className="layer-scroll">
         {categories.map((category) => {
@@ -75,20 +80,19 @@ export default function SystemsList({
           return (
             <div key={category} style={hueStyle(hueOfSystem(category))}>
               <div className="layer-row">
-                <button
-                  className="category-visibility"
-                  aria-pressed={enabled}
-                  aria-label={
-                    (enabled ? 'Ocultar ' : 'Mostrar ') + categoryEs[category]
-                  }
-                  onClick={() => onToggleCategory(category)}
-                >
+                <label className="category-visibility">
+                  <input
+                    type="checkbox"
+                    className="sr-only"
+                    checked={enabled}
+                    onChange={() => onToggleCategory(category)}
+                  />
                   <span className="system-check" aria-hidden="true">
                     {enabled && <Check size={10} strokeWidth={3} />}
                   </span>
                   <Icon className="system-icon" size={16} aria-hidden="true" />
                   <span>{categoryEs[category]}</span>
-                </button>
+                </label>
                 <button
                   className="category-expand"
                   onClick={() =>
