@@ -1,0 +1,112 @@
+import { byId, isLevelRoot } from './manifest.ts';
+import { categories, type Category } from './concept.ts';
+import { isPhysical, rootLevel, type LevelId } from './levels.ts';
+import type { AirflowMode } from './airflow-policy.ts';
+import type { PowerTarget } from './power-flow-policy.ts';
+import { defaultBuild, type DesktopBuild } from './desktop-build.ts';
+
+/**
+ * What the explorer is currently showing, and the moves that change it.
+ *
+ * The catalogue in `manifest.ts` describes the machine and never changes; this
+ * is the part that does. Keeping the two apart means a change to what the
+ * viewer is looking at cannot quietly become a change to what exists.
+ */
+
+export type Selection = { concept: string; instance?: number };
+export type ExplorerState = {
+  level: LevelId;
+  explode: number;
+  visible: Category[];
+  hidden: string[];
+  selection: Selection | null;
+  isolated: boolean;
+  view: 'perspective' | 'top' | 'front' | 'back';
+  /**
+   * Whether the airflow chevrons are drawn, or `auto` to let the scale decide.
+   *
+   * A preference rather than a property of the view: once set either way it
+   * survives navigating, diving and searching, because someone who has asked
+   * to see where the air goes has asked it of the machine and not of one
+   * scale of it. `airflowShown` resolves it against the current scale.
+   */
+  airflow: AirflowMode;
+  /** Desktop power annotations persist across navigation until Reset. */
+  power: boolean;
+  powerTarget: PowerTarget;
+  /**
+   * The parts chosen for the desktop tower in the build workspace. Like the
+   * power preference it belongs to the machine, not to one scale, so it
+   * survives navigation and Reset; only the workspace puts the original parts
+   * back.
+   */
+  build: DesktopBuild;
+  /**
+   * Which page the tower is shown on: the explorer, or the build workspace,
+   * where choosing parts is the whole page. Both draw the same viewer, so
+   * switching keeps the scene and the tower already built.
+   */
+  workspace: 'explorer' | 'build';
+  cameraRevision: number;
+  focusRevision: number;
+  /** The component being opened, while the isolate-and-close-in ramp runs. */
+  diveInto: string | null;
+  /** Bumped to start a dive; the scene watches this rather than `diveInto`. */
+  diveRevision: number;
+};
+
+export const initialState: ExplorerState = {
+  level: rootLevel,
+  explode: 0,
+  visible: [...categories],
+  hidden: [],
+  selection: null,
+  isolated: false,
+  view: 'perspective',
+  airflow: 'auto',
+  power: false,
+  powerTarget: 'all',
+  build: defaultBuild,
+  workspace: 'explorer',
+  cameraRevision: 0,
+  focusRevision: 0,
+  diveInto: null,
+  diveRevision: 0,
+};
+
+export function selectSearch(state: ExplorerState, id: string): ExplorerState {
+  const c = byId[id];
+  // Scales themselves are navigated to, not selected: there is no single piece
+  // to highlight, so open the scale cleanly instead.
+  if (isLevelRoot(c))
+    return {
+      ...state,
+      level: c.level,
+      explode: 0,
+      selection: null,
+      visible: [...categories],
+      hidden: [],
+      isolated: false,
+      view: 'perspective',
+      focusRevision: 0,
+      cameraRevision: state.cameraRevision + 1,
+    };
+  return {
+    ...state,
+    level: c.level,
+    // Physical assemblies hide their internals, so part-way open is the only
+    // position where a result inside one is actually visible.
+    explode: isPhysical(c.level) ? 48 : 0,
+    selection: { concept: id },
+    visible: state.visible.includes(c.category)
+      ? state.visible
+      : [...state.visible, c.category],
+    // Hidden objects belong to the scale where they were hidden. A search that
+    // jumps to another scale starts with a clean visibility state, just like
+    // navigation and diving do.
+    hidden: state.level === c.level ? state.hidden.filter((x) => x !== id) : [],
+    isolated: false,
+    focusRevision: state.focusRevision + 1,
+    cameraRevision: state.cameraRevision + 1,
+  };
+}

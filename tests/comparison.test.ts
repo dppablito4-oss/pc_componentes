@@ -1,0 +1,320 @@
+import { readFileSync } from 'node:fs';
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import {
+  canComparePhysicalScale,
+  comparisonCategories,
+  comparisonCategoryLabel,
+  comparisonItem,
+  comparisonItemPath,
+  comparisonItems,
+  comparisonPanePoint,
+  comparisonRows,
+  createComparisonState,
+  filterComparisonItems,
+  initialComparisonState,
+  selectComparisonItem,
+  setComparisonActiveSide,
+  setComparisonExplode,
+  setComparisonFraming,
+  sharesSpecTable,
+  otherSide,
+  sideLetter,
+  swapComparisonSides,
+  validateComparisonCatalogue,
+} from '../lib/comparison-state.ts';
+import { branches, levelIds, levels, systemRoot } from '../lib/levels.ts';
+import { byId, categories } from '../lib/manifest.ts';
+import {
+  brandOf,
+  hueOfCategory,
+  hueOfLevel,
+  hueOfSystem,
+} from '../lib/palette.ts';
+
+await test('comparison discovers every explorable scale once, across all systems', () => {
+  assert.deepEqual(
+    comparisonItems.map((item) => item.level),
+    levelIds,
+  );
+  assert.equal(
+    new Set(comparisonItems.map((item) => item.level)).size,
+    levelIds.length,
+  );
+  for (const item of comparisonItems) {
+    assert.equal(item.system, systemRoot(item.level));
+    assert.equal(item.kind, levels[item.level].kind);
+    assert.equal(byId[levels[item.level].concept].open, item.level);
+    assert.ok(
+      comparisonCategories.some((category) => category.id === item.category),
+    );
+  }
+  validateComparisonCatalogue();
+});
+
+await test('categories distinguish subsystems and retain deeper scales with their family', () => {
+  const cases = {
+    pc: 'systems',
+    legion: 'systems',
+    macbook: 'systems',
+    motherboard: 'boards',
+    macboard: 'boards',
+    ryzenio: 'processors',
+    legioncore: 'processors',
+    maccore: 'processors',
+    die: 'graphics',
+    xve: 'graphics',
+    macgpucore: 'graphics',
+    cell: 'memory',
+    legionpackage: 'memory',
+    maccell: 'memory',
+    psubronze: 'power',
+    macbattery: 'power',
+    legiondisplay: 'displays',
+    macdisplay: 'displays',
+  } as const;
+  for (const [level, category] of Object.entries(cases))
+    assert.equal(
+      comparisonItem(level as keyof typeof cases).category,
+      category,
+    );
+  assert.deepEqual(
+    filterComparisonItems({ category: 'cooling' }).map((item) => item.level),
+    ['fan', 'cooler', 'liquid', 'legioncooling', 'maccooling'],
+  );
+});
+
+await test('catalogue filters combine category, system and all search words', () => {
+  assert.equal(filterComparisonItems().length, levelIds.length);
+  assert.equal(filterComparisonItems({ query: '   ' }).length, levelIds.length);
+  assert.deepEqual(
+    filterComparisonItems({ category: 'displays', system: 'macbook' }).map(
+      (item) => item.level,
+    ),
+    ['macdisplay'],
+  );
+  assert.deepEqual(
+    filterComparisonItems({
+      category: 'memory',
+      system: 'legion',
+      query: '  DDR4  8 GB 260-pin ',
+    }).map((item) => item.level),
+    ['legionmemory'],
+  );
+  assert.ok(
+    filterComparisonItems({ query: 'macbook memory cell' }).some(
+      (item) => item.level === 'maccell',
+    ),
+  );
+  assert.ok(
+    filterComparisonItems({ query: 'rtx 5090 tensor' }).some(
+      (item) => item.level === 'sm',
+    ),
+  );
+  assert.deepEqual(
+    filterComparisonItems({ category: 'cooling', query: 'unavailable model' }),
+    [],
+  );
+});
+
+await test('entry starts from the current scale with a distinct companion', () => {
+  assert.equal(initialComparisonState.left, 'card');
+  assert.equal(initialComparisonState.right, 'rx9070');
+  assert.equal(initialComparisonState.framing, 'fit');
+  for (const level of levelIds) {
+    const state = createComparisonState(level);
+    assert.equal(state.left, level);
+    assert.notEqual(state.right, level);
+    assert.equal(
+      comparisonItem(state.right).category,
+      comparisonItem(level).category,
+    );
+  }
+  assert.equal(createComparisonState('macbook').right, 'pc');
+  assert.equal(
+    comparisonItem(createComparisonState('macgpu').right).system,
+    'pc',
+  );
+});
+
+await test('every distinct cross-category and cross-system pair can be selected', () => {
+  for (const left of levelIds)
+    for (const right of levelIds) {
+      if (left === right) continue;
+      const state = createComparisonState(left);
+      const selected = selectComparisonItem(state, 'right', right);
+      assert.equal(selected.left, left);
+      assert.equal(selected.right, right);
+      assert.equal(selectComparisonItem(selected, 'left', right), selected);
+      assert.equal(selectComparisonItem(selected, 'right', left), selected);
+    }
+  const state = { ...initialComparisonState, specsOpen: true, explode: 42 };
+  const both = selectComparisonItem(
+    selectComparisonItem(state, 'left', 'maccell'),
+    'right',
+    'fan',
+  );
+  assert.deepEqual(both, { ...state, left: 'maccell', right: 'fan' });
+  assert.deepEqual(swapComparisonSides(both), {
+    ...both,
+    left: 'fan',
+    right: 'maccell',
+  });
+  assert.deepEqual(setComparisonActiveSide(both, 'right'), {
+    ...both,
+    activeSide: 'right',
+  });
+  assert.equal(setComparisonExplode(both, 140).explode, 100);
+  assert.equal(setComparisonExplode(both, -20).explode, 0);
+});
+
+await test('true-size framing only accepts uniform physical scales and resets for diagrams', () => {
+  assert.equal(comparisonItem('pc').millimetersPerUnit, 35);
+  assert.equal(comparisonItem('card').millimetersPerUnit, 348 / 8.93);
+  assert.equal(comparisonItem('legionmemory').millimetersPerUnit, 20);
+  assert.equal(comparisonItem('dimm').millimetersPerUnit, 6);
+  for (const level of ['dram', 'ddr4dram', 'macmemory', 'die'] as const)
+    assert.equal(comparisonItem(level).millimetersPerUnit, null);
+  assert.ok(canComparePhysicalScale('legionmemory', 'dimm'));
+  assert.equal(canComparePhysicalScale('dram', 'legionpackage'), false);
+  const scaled = setComparisonFraming(initialComparisonState, 'scale');
+  assert.equal(scaled.framing, 'scale');
+  const physical = selectComparisonItem(scaled, 'left', 'macbook');
+  assert.equal(physical.framing, 'scale');
+  const logical = selectComparisonItem(physical, 'left', 'macgpu');
+  assert.equal(logical.framing, 'fit');
+  assert.equal(setComparisonFraming(logical, 'scale'), logical);
+});
+
+await test('specifications only describe the selected model, with no child-field fallback', () => {
+  for (const item of comparisonItems) {
+    const ownSpecs = byId[levels[item.level].concept].specifications;
+    assert.deepEqual(
+      Object.fromEntries(item.specs.map((spec) => [spec.label, spec.value])),
+      ownSpecs,
+    );
+  }
+  assert.deepEqual(comparisonItem('macboard').specs, []);
+  assert.equal(
+    comparisonItem('psu').specs.some((spec) => spec.label === 'Diameter'),
+    false,
+  );
+  assert.equal(
+    comparisonItem('legioncpu').specs.some(
+      (spec) => spec.label === 'Architecture',
+    ),
+    false,
+  );
+});
+
+await test('specification rows match meaning by label and preserve missing values', () => {
+  const storage = comparisonRows('ssd', 'nvme');
+  assert.deepEqual(
+    storage.find((row) => row.label === 'Dimensions'),
+    {
+      id: 'storage:dimensions',
+      label: 'Dimensions',
+      left: '100 × 69.85 × 7 mm',
+      right: '80 × 22 mm',
+    },
+  );
+  const gpu = comparisonRows('card', 'arcb580');
+  assert.equal(gpu.find((row) => row.label === 'Weight')?.left, null);
+  assert.equal(gpu.find((row) => row.label === 'Weight')?.right, '779 g');
+  assert.equal(gpu.find((row) => row.label === 'Graphics power')?.right, null);
+  const unrelated = comparisonRows('maccpu', 'macgpu').filter(
+    (row) => row.label === 'Cores',
+  );
+  assert.equal(unrelated.length, 2);
+  assert.ok(unrelated.every((row) => row.left === null || row.right === null));
+  assert.deepEqual(comparisonRows('legionboard', 'macboard'), []);
+});
+
+await test('labels, paths and table eligibility describe items the way the picker shows them', () => {
+  assert.equal(comparisonCategoryLabel('power'), 'Power & batteries');
+  assert.equal(comparisonItemPath(comparisonItem('pc')), 'Desktop PC');
+  assert.equal(
+    comparisonItemPath(comparisonItem('ryzenio')),
+    'Desktop PC / Processor / Ryzen 9 9950X',
+  );
+  // Filed the way the menus file them, not the way the dive reaches them: a
+  // processor and the M.2 drive open from the board, but are not the board's.
+  assert.equal(
+    comparisonItemPath(comparisonItem('corei9')),
+    'Desktop PC / Processor',
+  );
+  assert.equal(
+    comparisonItemPath(comparisonItem('nvme')),
+    'Desktop PC / Storage',
+  );
+  assert.equal(
+    comparisonItemPath(comparisonItem('z890')),
+    'Desktop PC / Motherboard',
+  );
+  assert.equal(
+    comparisonItemPath(comparisonItem('sm')),
+    'Desktop PC / GPU / RTX 5090 / GB202 / GPC / TPC',
+  );
+  // Searching for the board finds the boards, and no longer the processors
+  // that sit in them.
+  const board = filterComparisonItems({ query: 'motherboard' });
+  assert.ok(board.some((item) => item.level === 'z890'));
+  assert.ok(!board.some((item) => item.category === 'processors'));
+  assert.ok(sharesSpecTable('ssd', 'legionstorage'));
+  assert.equal(sharesSpecTable('maccpu', 'nvme'), false);
+  // Same category, but a hardware model and a diagram never share rows.
+  assert.equal(sharesSpecTable('dimm', 'cell'), false);
+  assert.deepEqual(
+    (['left', 'right'] as const).map((side) => [
+      sideLetter(side),
+      otherSide(side),
+    ]),
+    [
+      ['A', 'right'],
+      ['B', 'left'],
+    ],
+  );
+});
+
+await test('pane coordinates map split and mobile viewports independently', () => {
+  const rect = { left: 100, top: 50, width: 1000, height: 500 };
+  const cases = [
+    [100, 50, true, 'left', { side: 'left', x: -1, y: 1 }],
+    [600, 300, true, 'left', { side: 'right', x: -1, y: 0 }],
+    [1100, 550, true, 'left', { side: 'right', x: 1, y: -1 }],
+    [600, 300, false, 'right', { side: 'right', x: 0, y: 0 }],
+  ] as const;
+  for (const [x, y, split, side, expected] of cases)
+    assert.deepEqual(comparisonPanePoint(x, y, rect, split, side), expected);
+});
+
+await test('every scale, system and category takes a part colour the stylesheet declares', () => {
+  const css = readFileSync(
+    new URL('../app/workbench.css', import.meta.url),
+    'utf8',
+  );
+  const hues = new Set([...css.matchAll(/--hue-([a-z]+):/g)].map((m) => m[1]));
+  const brands = new Set(
+    [...css.matchAll(/--brand-([a-z]+):/g)].map((m) => m[1]),
+  );
+  for (const level of levelIds)
+    assert.ok(hues.has(hueOfLevel(level)), `${level}: ${hueOfLevel(level)}`);
+  for (const category of categories)
+    assert.ok(hues.has(hueOfSystem(category)), category);
+  for (const item of comparisonItems)
+    assert.ok(hues.has(hueOfCategory(item.category)), item.category);
+  // A scale keeps the colour of the part it is inside.
+  assert.equal(hueOfLevel('pc'), 'system');
+  assert.equal(hueOfLevel('ryzen'), 'processor');
+  assert.equal(hueOfLevel('b650m'), 'board');
+  assert.equal(hueOfLevel('sm'), 'graphics');
+  assert.equal(hueOfLevel('cell'), 'memory');
+  assert.equal(hueOfLevel('legiondisplay'), 'display');
+  // Each card's dropdown is marked by its chip maker.
+  const cards = branches('pc').find(({ label }) => label === 'GPU')!.submenus;
+  assert.deepEqual(
+    cards.map(({ root }) => brandOf(root)),
+    ['nvidia', 'amd', 'intel', 'nvidia', 'nvidia'],
+  );
+  for (const { root } of cards) assert.ok(brands.has(brandOf(root)!), root);
+});
