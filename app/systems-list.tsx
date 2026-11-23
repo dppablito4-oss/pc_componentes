@@ -83,7 +83,6 @@ export default function SystemsList({
                 <label className="category-visibility">
                   <input
                     type="checkbox"
-                    className="sr-only"
                     checked={enabled}
                     onChange={() => onToggleCategory(category)}
                   />

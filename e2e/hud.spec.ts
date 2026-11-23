@@ -59,4 +59,11 @@ test('the HUD keeps its canvas size and selection while panels are toggled', asy
   );
   await expect(page.locator('.disassembly output')).toHaveText('0%');
   await expect(detail).toBeVisible();
+
+  if (mobile) await layers.click();
+  await page.getByRole('checkbox', { name: 'Gráficos' }).uncheck();
+  await page.getByRole('button', { name: 'Ocultar todo', exact: true }).click();
+  await expect(page.getByRole('checkbox', { checked: true })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Mostrar todo', exact: true }).click();
+  await expect(page.getByRole('checkbox', { checked: false })).toHaveCount(0);
 });
