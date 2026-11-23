@@ -1,4 +1,6 @@
 'use client';
+import { bilingualPartName } from '@/lib/locale-es';
+import { byId } from '@/lib/manifest';
 import { useState } from 'react';
 import type { ExplorerState, Selection } from '@/lib/explorer-state';
 import type { PartLabel } from '@/lib/inventory-labels';
@@ -51,17 +53,17 @@ export default function Viewer({
       labels: setLabels,
       error: reportError,
     }),
-    'The 3D viewer could not load. Reload to try again.',
+    'No se pudo cargar el visor 3D. Recárgalo para volver a intentarlo.',
   );
   return (
     <>
       <div
         ref={host}
         className="viewport"
-        aria-label="Interactive 3D computer model"
+        aria-label="Modelo interactivo de PC en 3D"
       >
         {labels.length > 0 && (
-          <ul className="part-labels" aria-label="Parts on the tray">
+          <ul className="part-labels" aria-label="Piezas del inventario">
             {labels.map((label) => (
               <li
                 key={label.concept}
@@ -75,6 +77,7 @@ export default function Viewer({
                     )
                   }
                   aria-pressed={state.selection?.concept === label.concept}
+                  title={bilingualPartName(byId[label.concept])}
                 >
                   {label.name}
                 </button>
@@ -88,16 +91,16 @@ export default function Viewer({
           rather than being drawn underneath it. */}
       {loading && !error && (
         <div className="empty-scene loading">
-          <h3>Loading components for you…</h3>
+          <h3>Cargando componentes…</h3>
         </div>
       )}
       {!ready && !error && (
-        <output className="viewer-status sr-only">Loading…</output>
+        <output className="viewer-status sr-only">Cargando…</output>
       )}
       {error && (
         <div className="viewer-status error" role="alert">
           {error}
-          <button onClick={() => location.reload()}>Reload viewer</button>
+          <button onClick={() => location.reload()}>Recargar visor</button>
         </div>
       )}
       {hover && (
@@ -113,8 +116,8 @@ export default function Viewer({
           <span>
             {hoverHint ??
               (hover.opens
-                ? 'Left-click to open · right-click to inspect'
-                : 'Click to inspect')}
+                ? 'Clic para abrir · clic derecho para inspeccionar'
+                : 'Haz clic para inspeccionar')}
           </span>
         </div>
       )}

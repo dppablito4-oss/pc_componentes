@@ -51,27 +51,27 @@ try {
   const openFromTray = async (label, destination) => {
     console.log('Opening', destination, 'from its tray item');
     await page
-      .getByRole('list', { name: 'Parts on the tray' })
-      .getByRole('button', { name: label, exact: true })
+      .getByRole('list', { name: 'Piezas del inventario' })
+      .locator(`button[title$=" · ${label}"]`)
       .evaluate((button) => button.click());
     await page
-      .getByRole('button', { name: new RegExp('^Take apart ') })
+      .getByRole('button', { name: new RegExp('^Explorar ') })
       .evaluate((button) => button.click());
     await ready(destination);
   };
   await page.goto(base + '/?scale=legion');
   await ready('legion');
   await capture('legion-assembled');
-  await phase('Dissection', 'legion', 50);
+  await phase('Desmontaje', 'legion', 50);
   await capture('legion-exploded');
-  await phase('Inventory', 'legion', 100);
+  await phase('Inventario', 'legion', 100);
   await capture('legion-inventory');
   await openFromTray('Legion system board', 'legionboard');
-  await phase('Inventory', 'legionboard', 100);
+  await phase('Inventario', 'legionboard', 100);
   await openFromTray('DDR4 SO-DIMM', 'legionmemory');
-  await phase('Inventory', 'legionmemory', 100);
+  await phase('Inventario', 'legionmemory', 100);
   await openFromTray('DDR4 FBGA packages', 'legionpackage');
-  await phase('Dissection', 'legionpackage', 50);
+  await phase('Desmontaje', 'legionpackage', 50);
   await capture('legion-package-exploded');
   console.log('Switching to Mac');
   await page
@@ -80,16 +80,16 @@ try {
     .evaluate((button) => button.click());
   await ready('macbook');
   await capture('macbook-assembled');
-  await phase('Dissection', 'macbook', 50);
+  await phase('Desmontaje', 'macbook', 50);
   await capture('macbook-exploded');
   await page
-    .getByRole('button', { name: 'Reset camera and assembly' })
+    .getByRole('button', { name: 'Restablecer cámara y montaje' })
     .evaluate((button) => button.click());
   await ready('macbook');
   assert.equal(new URL(page.url()).searchParams.get('scale'), 'macbook');
   console.log('Comparing both laptops');
   await page
-    .getByRole('button', { name: 'Compare components' })
+    .getByRole('button', { name: 'Comparar componentes' })
     .evaluate((button) => button.click());
   // Free the first slot even when entering from MacBook seeds Legion on B.
   for (const [side, level] of [
@@ -98,14 +98,14 @@ try {
     ['B', 'macbook'],
   ]) {
     await page
-      .getByRole('button', { name: `Choose part ${side}`, exact: true })
+      .getByRole('button', { name: `Elegir pieza ${side}`, exact: true })
       .evaluate((button) => button.click());
-    const picker = page.getByRole('dialog', { name: `Choose part ${side}` });
-    await picker.getByRole('textbox', { name: 'Search parts' }).fill('');
-    await picker.getByLabel('System', { exact: true }).selectOption('all');
+    const picker = page.getByRole('dialog', { name: `Elegir pieza ${side}` });
+    await picker.getByRole('textbox', { name: 'Buscar piezas' }).fill('');
+    await picker.getByLabel('Equipo', { exact: true }).selectOption('all');
     await picker
-      .getByRole('navigation', { name: 'Part categories' })
-      .getByRole('button', { name: 'All parts', exact: true })
+      .getByRole('navigation', { name: 'Categorías de piezas' })
+      .getByRole('button', { name: 'Todas las piezas', exact: true })
       .evaluate((button) => button.click());
     await picker
       .locator(`button[data-level="${level}"]`)
@@ -118,7 +118,7 @@ try {
       'legion:macbook',
   );
   await page
-    .getByRole('button', { name: 'Swap comparison sides' })
+    .getByRole('button', { name: 'Intercambiar los modelos' })
     .evaluate((button) => button.click());
   await page.waitForFunction(
     () =>
@@ -126,7 +126,7 @@ try {
       'macbook:legion',
   );
   await page
-    .getByRole('button', { name: 'Back to explorer' })
+    .getByRole('button', { name: 'Volver al explorador' })
     .evaluate((button) => button.click());
   console.log('Checking the existing desktop explorer');
   await page
@@ -143,11 +143,11 @@ try {
   await ready('maccell');
   await page.setViewportSize({ width: 390, height: 844 });
   await page
-    .getByRole('button', { name: 'Toggle systems' })
+    .getByRole('button', { name: 'Mostrar u ocultar sistemas' })
     .evaluate((button) => button.click());
   await page
     .locator('.system-picker button')
-    .filter({ hasText: 'Laptops' })
+    .filter({ hasText: 'Portátiles' })
     .evaluate((button) => button.click());
   await ready('legion');
   await capture('legion-mobile');

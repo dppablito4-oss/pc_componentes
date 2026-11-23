@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { categories, manifest, type Category } from '@/lib/manifest';
+import { bilingualPartName, categoryEs, partNameEs } from '@/lib/locale-es';
 import { hueOfSystem, hueStyle } from '@/lib/palette';
 
 type Props = {
@@ -35,9 +36,11 @@ export default function SystemsList({
   return (
     <div className="systems-section">
       <div className="section-heading">
-        VISIBLE SYSTEMS{' '}
+        Sistemas visibles{' '}
         <button onClick={onToggleAll}>
-          {visible.length === categories.length ? 'Hide all' : 'Show all'}
+          {visible.length === categories.length
+            ? 'Ocultar todo'
+            : 'Mostrar todo'}
         </button>
       </div>
       <div className="layer-scroll">
@@ -48,13 +51,14 @@ export default function SystemsList({
                 className="category-visibility"
                 aria-pressed={visible.includes(category)}
                 aria-label={
-                  (visible.includes(category) ? 'Hide ' : 'Show ') + category
+                  (visible.includes(category) ? 'Ocultar ' : 'Mostrar ') +
+                  categoryEs[category]
                 }
                 onClick={() => onToggleCategory(category)}
               >
                 <i />
-                <span>{category}</span>
-                <small>{visible.includes(category) ? 'On' : 'Off'}</small>
+                <span>{categoryEs[category]}</span>
+                <small>{visible.includes(category) ? 'Sí' : 'No'}</small>
               </button>
               <button
                 className="category-expand"
@@ -63,9 +67,9 @@ export default function SystemsList({
                 }
                 aria-expanded={expanded === category}
                 aria-label={
-                  (expanded === category ? 'Hide ' : 'Show ') +
-                  category +
-                  ' components'
+                  (expanded === category ? 'Ocultar' : 'Mostrar') +
+                  ' componentes de ' +
+                  categoryEs[category]
                 }
               >
                 <ChevronDown size={12} />
@@ -82,8 +86,11 @@ export default function SystemsList({
                   )
                   .map((c) => (
                     <div key={c.id}>
-                      <button onClick={() => onSelectConcept(c.id)}>
-                        {c.shortName}
+                      <button
+                        title={bilingualPartName(c)}
+                        onClick={() => onSelectConcept(c.id)}
+                      >
+                        {partNameEs(c, true)}
                       </button>
                       <Switch
                         size="sm"
@@ -95,8 +102,8 @@ export default function SystemsList({
                         }
                         aria-label={
                           (visible.includes(category) && !hidden.includes(c.id)
-                            ? 'Hide '
-                            : 'Show ') + c.name
+                            ? 'Ocultar '
+                            : 'Mostrar ') + partNameEs(c)
                         }
                       />
                     </div>

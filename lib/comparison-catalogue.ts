@@ -10,6 +10,8 @@ import {
   type LevelId,
 } from './levels.ts';
 import type { Category } from './concept.ts';
+import { normalizeSearch, spanishComponentName } from './component-names-es.ts';
+import { levelNameEs } from './locale-es.ts';
 
 /** Picker headings, in display order. Empty categories are not shown. */
 const categoryDefinitions = [
@@ -26,6 +28,18 @@ const categoryDefinitions = [
 ] as const;
 
 export type ComparisonCategoryId = (typeof categoryDefinitions)[number]['id'];
+export const comparisonCategoryEs: Record<ComparisonCategoryId, string> = {
+  systems: 'Equipos',
+  boards: 'Placas base',
+  processors: 'Procesadores',
+  graphics: 'Gráficos',
+  memory: 'Memoria',
+  storage: 'Almacenamiento',
+  cooling: 'Refrigeración',
+  power: 'Alimentación y baterías',
+  displays: 'Pantallas',
+  chassis: 'Gabinete',
+};
 export type ComparisonSpec = { id: string; label: string; value: string };
 export type ComparisonItem = {
   level: LevelId;
@@ -156,19 +170,22 @@ export function comparisonItemPath(item: ComparisonItem) {
 // Search and filtering
 
 function searchableText(item: ComparisonItem) {
-  return [
-    item.name,
-    item.shortName,
-    item.note,
-    item.kind,
-    comparisonCategoryLabel(item.category),
-    ...menuPath(item.level),
-    levels[item.level].name,
-    ...byId[levels[item.level].concept].searchTerms,
-    ...item.specs.flatMap((spec) => [spec.label, spec.value]),
-  ]
-    .join(' ')
-    .toLowerCase();
+  return normalizeSearch(
+    [
+      item.name,
+      item.shortName,
+      spanishComponentName(item.name),
+      levelNameEs(item.level),
+      item.note,
+      item.kind,
+      comparisonCategoryLabel(item.category),
+      comparisonCategoryEs[item.category],
+      ...menuPath(item.level),
+      levels[item.level].name,
+      ...byId[levels[item.level].concept].searchTerms,
+      ...item.specs.flatMap((spec) => [spec.label, spec.value]),
+    ].join(' '),
+  );
 }
 
 const searchText = new Map(
@@ -187,7 +204,7 @@ export function filterComparisonItems({
   system,
   query = '',
 }: ComparisonFilter = {}) {
-  const terms = query.toLowerCase().trim().split(/\s+/).filter(Boolean);
+  const terms = normalizeSearch(query).trim().split(/\s+/).filter(Boolean);
   return comparisonItems.filter(
     (item) =>
       (!category || item.category === category) &&

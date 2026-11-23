@@ -1,4 +1,5 @@
 'use client';
+import { partNameEs } from '@/lib/locale-es';
 import { useState } from 'react';
 import {
   comparisonItem,
@@ -37,7 +38,7 @@ export default function ComparisonViewer({ state }: Props) {
         ),
       error: reportError,
     }),
-    'The comparison viewer could not load. Reload to try again.',
+    'No se pudo cargar el comparador. Reload to try again.',
   );
 
   return (
@@ -46,15 +47,15 @@ export default function ComparisonViewer({ state }: Props) {
         ref={host}
         className="comparison-viewport"
         data-active-side={state.activeSide}
-        aria-label={`Synchronized 3D comparison of ${left.shortName} and ${right.shortName}`}
+        aria-label={`Comparación 3D sincronizada de ${partNameEs(left)} y ${partNameEs(right)}`}
       >
         <section
           className="comparison-pane-a11y left"
-          aria-label={`Left viewport: ${left.name}`}
+          aria-label={`Visor izquierdo: ${partNameEs(left)}`}
         />
         <section
           className="comparison-pane-a11y right"
-          aria-label={`Right viewport: ${right.name}`}
+          aria-label={`Visor derecho: ${partNameEs(right)}`}
         />
       </div>
       {!ready && !error && (
@@ -63,7 +64,7 @@ export default function ComparisonViewer({ state }: Props) {
       {error && (
         <div className="comparison-error" role="alert">
           {error}
-          <button onClick={() => location.reload()}>Reload viewer</button>
+          <button onClick={() => location.reload()}>Recargar visor</button>
         </div>
       )}
       {hover && (

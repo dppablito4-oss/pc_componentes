@@ -7,7 +7,7 @@ type ViewerEngine<State> = {
 };
 
 const webglError =
-  'WebGL could not start. Enable graphics acceleration in your browser, then reload the viewer.';
+  'WebGL no pudo iniciarse. Activa la aceleración gráfica del navegador y recarga el visor.';
 
 type ViewerFactory<State, Callbacks, Engine> = (
   host: HTMLDivElement,

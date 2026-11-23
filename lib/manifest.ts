@@ -35,6 +35,7 @@ import {
   type LevelId,
 } from './levels.ts';
 import { sources } from './sources.ts';
+import { normalizeSearch, spanishComponentName } from './component-names-es.ts';
 
 export {
   categories,
@@ -107,17 +108,20 @@ export function isLevelRoot(c: Concept) {
 }
 
 export function searchConcepts(query: string) {
-  const terms = query
-    .toLowerCase()
+  const terms = normalizeSearch(query)
     .trim()
     .split(/\s+/)
     .filter((t) => t !== 'all');
   return manifest.filter((c) =>
     terms.every((t) =>
-      [c.name, c.shortName, ...c.searchTerms]
-        .join(' ')
-        .toLowerCase()
-        .includes(t),
+      normalizeSearch(
+        [
+          c.name,
+          c.shortName,
+          spanishComponentName(c.name),
+          ...c.searchTerms,
+        ].join(' '),
+      ).includes(t),
     ),
   );
 }

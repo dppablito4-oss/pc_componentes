@@ -61,7 +61,7 @@ try {
   };
   /** The part a slot holds, as its row says. */
   const chosen = (label, on = page) =>
-    slot(label, on).locator('.build-slot-text strong').innerText();
+    slot(label, on).locator('.build-slot-text strong').getAttribute('title');
   /**
    * A part in the workspace, by its slot and the start of its name. Returns
    * how long the page took from the click to its next frame, and checks the
@@ -152,7 +152,7 @@ try {
   // Opening the workspace keeps the tower the explorer already built.
   let before = await model();
   await page
-    .getByRole('button', { name: /Build your own PC/ })
+    .getByRole('button', { name: /Arma tu PC/ })
     .evaluate((button) => button.click());
   await page.locator('.build-workbench .build-parts').waitFor();
   await page.waitForURL(/mode=build/);
@@ -162,44 +162,50 @@ try {
   assert.equal(await page.locator('.build-slot').count(), 7);
   // The parts list starts as a list: every slot closed, its part named.
   assert.equal(await page.locator('.build-option').count(), 0);
-  assert.equal(await chosen('Graphics card'), 'GeForce RTX 5090');
+  assert.equal(await chosen('Tarjeta gráfica'), 'GeForce RTX 5090');
   assert.match(
     await page.locator('.build-share').innerText(),
-    /Share your build/,
+    /Compartir configuración/,
   );
   // Nothing sits at the bottom of the stage once the tower is built.
   assert.equal(await page.locator('.build-fitting').count(), 0);
   // A new visitor's build, on the 1000 W supply, has nothing to fix or check.
-  assert.match(await summary(), /Everything works together/);
-  assert.match(await summary(), /10 of 10 checks pass/);
+  assert.match(await summary(), /Componentes compatibles/);
+  assert.match(await summary(), /10 de 10 pruebas superadas/);
   await settled();
   await capture('build-original');
 
   // A slot with parts from several makers can be narrowed to one.
-  await openSlot('Graphics card');
-  assert.equal(await slot('Graphics card').locator('.build-option').count(), 5);
-  await slot('Graphics card')
+  await openSlot('Tarjeta gráfica');
+  assert.equal(
+    await slot('Tarjeta gráfica').locator('.build-option').count(),
+    5,
+  );
+  await slot('Tarjeta gráfica')
     .getByRole('button', { name: 'NVIDIA', exact: true })
     .evaluate((button) => button.click());
-  assert.equal(await slot('Graphics card').locator('.build-option').count(), 3);
-  await slot('Graphics card')
-    .getByRole('button', { name: /^All/ })
+  assert.equal(
+    await slot('Tarjeta gráfica').locator('.build-option').count(),
+    3,
+  );
+  await slot('Tarjeta gráfica')
+    .getByRole('button', { name: /^Todos/ })
     .evaluate((button) => button.click());
   await capture('build-graphics-open');
 
   before = await model();
-  await pick('Graphics card', /^Radeon RX 9070 XT/);
+  await pick('Tarjeta gráfica', /^Radeon RX 9070 XT/);
   await rebuilt(before);
-  assert.match(await summary(), /Everything works together/);
+  assert.match(await summary(), /Componentes compatibles/);
   await capture('build-radeon');
 
   before = await model();
-  await pick('Power supply', /^ASUS TUF Gaming 750W Bronze/);
+  await pick('Fuente de alimentación', /^ASUS TUF Gaming 750W Bronze/);
   await rebuilt(before);
-  assert.match(await summary(), /problem/);
+  assert.match(await summary(), /problema/);
   // The option that causes it says so on its card.
   assert.match(
-    await slot('Power supply')
+    await slot('Fuente de alimentación')
       .locator('.build-option[aria-pressed=true]')
       .innerText(),
     /Conflicts/,
@@ -212,16 +218,16 @@ try {
     /^Intel Arc B580/,
   ]) {
     before = await model();
-    await pick('Graphics card', card);
+    await pick('Tarjeta gráfica', card);
     await rebuilt(before);
-    assert.match(await summary(), /Everything works together/);
+    assert.match(await summary(), /Componentes compatibles/);
   }
 
   // A processor that cannot seat is reported, and its socket keeps its cover.
   before = await model();
-  await pick('Processor', /^Intel Core Ultra 9 285K/);
+  await pick('Procesador', /^Intel Core Ultra 9 285K/);
   await rebuilt(before);
-  assert.match(await summary(), /problem/);
+  assert.match(await summary(), /problema/);
   // The report lists the problem as one line; clicked, it says what is wrong
   // and offers the slots that would fix it.
   const problem = page
@@ -235,63 +241,63 @@ try {
     await problem.locator('.build-check-body').innerText(),
     /LGA 1851/,
   );
-  await slot('Processor')
+  await slot('Procesador')
     .locator('.build-slot-head')
     .evaluate((button) => button.click());
   await problem
-    .getByRole('button', { name: /Change the processor/ })
+    .getByRole('button', { name: /Cambiar procesador/ })
     .evaluate((button) => button.click());
   assert.equal(
-    await slot('Processor')
+    await slot('Procesador')
       .locator('.build-slot-head')
       .getAttribute('aria-expanded'),
     'true',
   );
   // The Intel board takes it, and the build works again.
   before = await model();
-  await pick('Motherboard', /^ASUS TUF GAMING Z890-PLUS WIFI/);
+  await pick('Placa base', /^ASUS TUF GAMING Z890-PLUS WIFI/);
   await rebuilt(before);
-  assert.match(await summary(), /Everything works together/);
+  assert.match(await summary(), /Componentes compatibles/);
   await capture('build-intel');
   before = await model();
-  await pick('Processor', /^AMD Ryzen 9 9950X/);
+  await pick('Procesador', /^AMD Ryzen 9 9950X/);
   await rebuilt(before);
   before = await model();
-  await pick('Motherboard', /^ASUS TUF GAMING B650M-PLUS WIFI/);
+  await pick('Placa base', /^ASUS TUF GAMING B650M-PLUS WIFI/);
   await rebuilt(before);
-  assert.match(await summary(), /Everything works together/);
+  assert.match(await summary(), /Componentes compatibles/);
   // Four modules fit, and are rated slower on this processor.
   before = await model();
-  await pick('Memory', /^Kingston FURY Beast DDR5-6000 × 4/);
+  await pick('Memoria', /^Kingston FURY Beast DDR5-6000 × 4/);
   await rebuilt(before);
-  assert.match(await summary(), /1 thing to check/);
+  assert.match(await summary(), /1 advertencia/);
   await capture('build-micro-four');
   before = await model();
-  await pick('Memory', /^Kingston FURY Beast DDR5-60002 × 16/);
+  await pick('Memoria', /^Kingston FURY Beast DDR5-60002 × 16/);
   await rebuilt(before);
   before = await model();
-  await pick('Motherboard', /^ASUS TUF GAMING X670E-PLUS WIFI/);
+  await pick('Placa base', /^ASUS TUF GAMING X670E-PLUS WIFI/);
   await rebuilt(before);
 
   // The liquid loop goes in, with its radiator at the front.
   before = await model();
-  await pick('CPU cooler', /^360 mm liquid cooler/);
+  await pick('Disipador de CPU', /^360 mm liquid cooler/);
   await rebuilt(before);
-  assert.match(await summary(), /Everything works together/);
+  assert.match(await summary(), /Componentes compatibles/);
   await capture('build-liquid');
 
   // Without the SATA drive, the tower loses the drive and its lead.
   before = await model();
-  await pick('Storage', /^M\.2 NVMe SSD only/);
+  await pick('Almacenamiento', /^M\.2 NVMe SSD only/);
   await rebuilt(before);
-  assert.match(await summary(), /Everything works together/);
+  assert.match(await summary(), /Componentes compatibles/);
   await capture('build-liquid-nvme');
 
   // Either panel folds to a rail and the stage takes the room, in one step.
   const stage = () => page.locator('.viewport').boundingBox();
   const wide = await stage();
-  await click('Hide parts');
-  await click('Hide compatibility');
+  await click('Ocultar piezas');
+  await click('Ocultar compatibilidad');
   await page.locator('.build-parts.collapsed .build-rail').waitFor();
   await page.locator('.build-report.collapsed .build-rail-verdict').waitFor();
   await ready();
@@ -304,7 +310,7 @@ try {
     .filter({ has: page.locator('svg') })
     .nth(5)
     .evaluate((button) => button.click());
-  await slot('Graphics card').locator('.build-option').first().waitFor();
+  await slot('Tarjeta gráfica').locator('.build-option').first().waitFor();
   await page
     .locator('.build-rail-verdict')
     .evaluate((button) => button.click());
@@ -314,7 +320,7 @@ try {
 
   // Two choices inside one frame are one rebuild, for the last: going to the
   // Radeon and straight back to the Arc never builds the Radeon's tower.
-  await openSlot('Graphics card');
+  await openSlot('Tarjeta gráfica');
   before = await model();
   const seen = await page.evaluate(
     () =>
@@ -354,7 +360,7 @@ try {
   await pop.waitFor();
   assert.match(
     await pop.locator('.build-share-head').innerText(),
-    /Link copied to your clipboard|Copy this link/,
+    /Enlace copiado al portapapeles|Copiar este enlace/,
   );
   assert.equal(await pop.locator('.build-share-url').innerText(), page.url());
   await page.keyboard.press('Escape');
@@ -376,13 +382,13 @@ try {
   assert.equal(await model(shared), await model());
   assert.match(
     await shared.locator('.build-summary').innerText(),
-    /Everything works together/,
+    /Componentes compatibles/,
   );
   for (const [label, part] of [
-    ['Graphics card', 'Intel Arc B580'],
-    ['Power supply', 'ASUS TUF Gaming 750W Bronze'],
-    ['CPU cooler', '360 mm liquid cooler'],
-    ['Storage', 'M.2 NVMe SSD only'],
+    ['Tarjeta gráfica', 'Intel Arc B580'],
+    ['Fuente de alimentación', 'ASUS TUF Gaming 750W Bronze'],
+    ['Disipador de CPU', '360 mm liquid cooler'],
+    ['Almacenamiento', 'M.2 NVMe SSD only'],
   ])
     assert.equal(await chosen(label, shared), part);
   await shared.close();
@@ -401,34 +407,37 @@ try {
   await ready();
 
   // The installed card describes itself, and opens into its own scale.
-  await click('Show power flow');
-  await click('Inspect Graphics card: 8-pin PCIe');
+  await click('Mostrar flujo de alimentación');
+  await click('Inspeccionar Graphics card: 8-pin PCIe');
   await page
     .getByRole('heading', {
-      name: 'Intel Arc B580 Limited Edition',
+      name: 'Tarjeta gráfica Intel Arc B580 Limited Edition',
       exact: true,
     })
     .waitFor();
   await capture('build-arc-detail');
   await page
-    .getByRole('button', { name: /^Take apart / })
+    .getByRole('button', { name: /^Explorar / })
     .evaluate((button) => button.click());
   await ready('arcb580');
   await page.goBack();
   await ready();
   // The build survives the round trip, and Reset.
-  await click('Reset camera and assembly');
+  await click('Restablecer cámara y montaje');
   await ready();
   await page
-    .getByRole('button', { name: /Build your own PC/ })
+    .getByRole('button', { name: /Arma tu PC/ })
     .evaluate((button) => button.click());
   await page.locator('.build-workbench').waitFor();
-  assert.match(await summary(), /Everything works together/);
+  assert.match(await summary(), /Componentes compatibles/);
   before = await model();
-  await click('Back to the original build');
+  await click('Restaurar configuración original');
   await rebuilt(before);
-  assert.match(await summary(), /10 of 10 checks pass/);
-  assert.equal(await chosen('Power supply'), 'ASUS TUF Gaming 1000W Gold');
+  assert.match(await summary(), /10 de 10 pruebas superadas/);
+  assert.equal(
+    await chosen('Fuente de alimentación'),
+    'ASUS TUF Gaming 1000W Gold',
+  );
   await page.waitForURL(
     (url) => !/gpu=|psu=|cooler=|storage=|board=|cpu=|ram=/.test(url.search),
   );
@@ -444,26 +453,26 @@ try {
     await page.locator('.build-tabs [role=tab]').first().waitFor();
     await capture(`build-phone-${width}-parts`);
     await page
-      .getByRole('tab', { name: /Checks/ })
+      .getByRole('tab', { name: /Compatibilidad/ })
       .evaluate((button) => button.click());
     await page.locator('.build-report').waitFor();
     assert.equal(await page.locator('.build-parts').isVisible(), false);
     assert.ok(await noSideScroll(), `no side scroll at ${width}, checks`);
     await capture(`build-phone-${width}-checks`);
     await page
-      .getByRole('tab', { name: /Parts/ })
+      .getByRole('tab', { name: /Piezas/ })
       .evaluate((button) => button.click());
     // The sheet drops away to give the tower the screen, on a phone held
     // upright; on its side the two already share the width.
     if (width < height) {
       const short = await page.locator('.viewport').boundingBox();
-      await click('Hide the panels');
+      await click('Ocultar paneles');
       await page.locator('.build-panels.sheet-down').waitFor();
       await ready();
       const tall = await page.locator('.viewport').boundingBox();
       assert.ok(tall.height > short.height + 200, 'the tower takes the sheet');
       await capture(`build-phone-${width}-tower`);
-      await click('Show the panels');
+      await click('Mostrar paneles');
       await page.locator('.build-parts').waitFor();
     }
   }

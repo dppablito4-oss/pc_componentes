@@ -15,6 +15,12 @@ import {
   type ComparisonLevel,
 } from '@/lib/comparison-state';
 import { byId } from '@/lib/manifest';
+import {
+  bilingualPartName,
+  levelNameEs,
+  partNameEs,
+  specificationNameEs,
+} from '@/lib/locale-es';
 import { levels } from '@/lib/levels';
 import { sources } from '@/lib/sources';
 
@@ -30,7 +36,7 @@ type Pair = readonly [ComparisonItem, ComparisonItem];
 const letters = ['A', 'B'] as const;
 
 function SpecValue({ value }: { value: string | null }) {
-  return value ?? <span className="spec-unlisted">Not listed</span>;
+  return value ?? <span className="spec-unlisted">Sin datos</span>;
 }
 
 /** Like parts: one row per field label, gaps left visible. */
@@ -42,9 +48,9 @@ function SpecTable({ pair }: { pair: Pair }) {
       <table className="comparison-specs-grid">
         <thead>
           <tr className="spec-row spec-head">
-            <th scope="col">Specification</th>
-            <th scope="col">A · {left.shortName}</th>
-            <th scope="col">B · {right.shortName}</th>
+            <th scope="col">Especificación</th>
+            <th scope="col">A · {partNameEs(left, true)}</th>
+            <th scope="col">B · {partNameEs(right, true)}</th>
           </tr>
         </thead>
         <tbody>
@@ -58,7 +64,9 @@ function SpecTable({ pair }: { pair: Pair }) {
                 key={row.id}
                 data-different={different || undefined}
               >
-                <th scope="row">{row.label}</th>
+                <th scope="row" title={row.label}>
+                  {specificationNameEs(row.label)}
+                </th>
                 <td>
                   <SpecValue value={row.left} />
                 </td>
@@ -72,7 +80,7 @@ function SpecTable({ pair }: { pair: Pair }) {
       </table>
       {!rows.length && (
         <p className="comparison-specs-note">
-          No specifications listed for these models.
+          No hay especificaciones para estos modelos.
         </p>
       )}
     </>
@@ -86,22 +94,22 @@ function SpecCards({ pair }: { pair: Pair }) {
       {pair.map((item, index) => (
         <section className="comparison-spec-card" key={item.level}>
           <h3>
-            {letters[index]} · {item.name}
+            {letters[index]} · {partNameEs(item)}
           </h3>
           <p>
-            {levels[item.system].name} ·{' '}
-            {item.kind === 'physical' ? 'Hardware' : 'Architecture diagram'}
+            {levelNameEs(item.system)} ·{' '}
+            {item.kind === 'physical' ? 'Hardware' : 'Diagrama de arquitectura'}
           </p>
           <dl>
             {item.specs.map((spec) => (
               <div key={spec.id}>
-                <dt>{spec.label}</dt>
+                <dt title={spec.label}>{specificationNameEs(spec.label)}</dt>
                 <dd>{spec.value}</dd>
               </div>
             ))}
           </dl>
           {!item.specs.length && (
-            <p>No specifications listed for this model.</p>
+            <p>No hay especificaciones para este modelo.</p>
           )}
         </section>
       ))}
@@ -118,7 +126,7 @@ function SourceNotes({ pair }: { pair: Pair }) {
         return (
           <section key={item.level}>
             <h3>
-              {letters[index]} · {item.shortName}
+              {letters[index]} · {bilingualPartName(item)}
             </h3>
             <p>{concept.physicalAccuracy}</p>
             <ul>
@@ -158,16 +166,16 @@ export default function ComparisonSpecs({
       >
         <div className="comparison-specs-heading">
           <div>
-            <SheetTitle>Specification comparison</SheetTitle>
+            <SheetTitle>Comparación de especificaciones</SheetTitle>
             <SheetDescription>
               {aligned
-                ? 'Matching fields are aligned. Not listed means the catalogue has no value for that model.'
-                : 'Different kinds of parts, with each model’s own specifications.'}
+                ? 'La tabla alinea las especificaciones comunes de los dos modelos.'
+                : 'Cada pieza muestra sus propias especificaciones.'}
             </SheetDescription>
           </div>
           <button
             ref={closeButton}
-            aria-label="Close specification comparison"
+            aria-label="Cerrar comparación de especificaciones"
             onClick={() => onOpenChange(false)}
           >
             <X size={18} />

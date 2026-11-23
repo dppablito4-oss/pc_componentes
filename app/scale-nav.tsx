@@ -29,6 +29,7 @@ import {
   submenuRoot,
   type LevelId,
 } from '@/lib/levels';
+import { levelNameEs } from '@/lib/locale-es';
 import { brandOf, brandStyle, hueOfLevel, hueStyle } from '@/lib/palette';
 
 /** One icon per scale, so the branch you are on is recognisable at a glance. */
@@ -113,24 +114,40 @@ const levelIcon: Record<LevelId, typeof Box> = {
   xve: Microscope,
 };
 
+const branchNameEs: Readonly<Record<string, string>> = {
+  Motherboard: 'Placa base',
+  Processor: 'Procesador',
+  Memory: 'Memoria',
+  'Power supply': 'Fuente de alimentación',
+  Cooling: 'Refrigeración',
+  Storage: 'Almacenamiento',
+  Battery: 'Batería',
+  Display: 'Pantalla',
+  'System board': 'Placa base',
+  'Logic board': 'Placa lógica',
+  'Apple Silicon': 'Apple Silicon',
+  GPU: 'Tarjetas gráficas',
+  Graphics: 'Gráficos',
+};
+
 /** What a menu's dropdowns are, where each is a product of its own. */
 const dropdowns: Record<string, string> = {
-  GPU: 'cards',
-  Memory: 'generations',
-  Processor: 'processors',
+  GPU: 'tarjetas',
+  Memory: 'generaciones',
+  Processor: 'procesadores',
 };
 /** Menus whose every scale is a whole product, so they are counted as such. */
 const products: Record<string, string> = {
-  Motherboard: 'boards',
-  'Power supply': 'models',
+  Motherboard: 'placas',
+  'Power supply': 'modelos',
 };
 
 /** The line under a menu: "5 cards · 17 scales", "3 boards", "1 scale inside". */
 function menuNote(label: string, scales: number, submenus: number) {
   if (submenus > 0)
-    return `${submenus} ${dropdowns[label] ?? 'models'} · ${scales} scales`;
+    return `${submenus} ${dropdowns[label] ?? 'modelos'} · ${scales} módulos`;
   if (products[label]) return `${scales} ${products[label]}`;
-  return `${scales} ${scales === 1 ? 'scale' : 'scales'} inside`;
+  return `${scales} ${scales === 1 ? 'módulo' : 'módulos'}`;
 }
 
 type Props = {
@@ -164,12 +181,12 @@ export default function ScaleNav({
     <div className="explore-section">
       <button
         className="mobile-close"
-        aria-label="Close systems"
+        aria-label="Cerrar sistemas"
         onClick={onClose}
       >
         <X size={17} />
       </button>
-      <nav className="system-picker" aria-label="Choose a system">
+      <nav className="system-picker" aria-label="Elegir un equipo">
         {systemRoots.map((root) => {
           const Icon = levelIcon[root];
           return (
@@ -183,9 +200,9 @@ export default function ScaleNav({
               </span>
               <strong>
                 {root === 'pc'
-                  ? 'Desktop PC'
+                  ? 'Escritorio'
                   : root === 'legion'
-                    ? 'Laptops'
+                    ? 'Portátiles'
                     : 'Mac'}
               </strong>
             </button>
@@ -195,18 +212,18 @@ export default function ScaleNav({
       <button className="compare-button" onClick={onCompare}>
         <GitCompareArrows size={16} />
         <span>
-          <strong>Compare components</strong>
+          <strong>Comparar componentes</strong>
         </span>
         <ChevronRight size={14} />
       </button>
       <button className="compare-button build-button" onClick={onBuild}>
         <Wrench size={16} />
         <span>
-          <strong>Build your own PC</strong>
+          <strong>Arma tu PC</strong>
         </span>
         <ChevronRight size={14} />
       </button>
-      <nav className="scale-navigation" aria-label="Exploration scale">
+      <nav className="scale-navigation" aria-label="Módulos de exploración">
         <button
           className={level === rootLevel ? 'active' : ''}
           aria-current={level === rootLevel ? 'true' : undefined}
@@ -220,10 +237,7 @@ export default function ScaleNav({
           <b className="nav-tile" aria-hidden="true">
             <RootIcon size={15} />
           </b>
-          <div>
-            {levels[rootLevel].name}
-            <small>{levels[rootLevel].summary}</small>
-          </div>
+          <div>{levelNameEs(rootLevel)}</div>
           <ChevronRight size={14} />
         </button>
 
@@ -238,17 +252,11 @@ export default function ScaleNav({
                 className={id === level ? 'active' : ''}
                 aria-current={id === level ? 'true' : undefined}
                 style={hueStyle(hueOfLevel(id))}
+                title={levels[id].name}
                 onClick={() => onNavigate(id)}
               >
                 <i />
-                <div>
-                  {levels[id].name}
-                  <small>
-                    {levels[id].detailed
-                      ? levels[id].summary
-                      : levels[id].summary + ' · placeholder'}
-                  </small>
-                </div>
+                <div>{levelNameEs(id)}</div>
               </button>
             );
             return (
@@ -269,7 +277,7 @@ export default function ScaleNav({
                     <Icon size={15} />
                   </b>
                   <div>
-                    {label}
+                    {branchNameEs[label] ?? label}
                     <small>
                       {menuNote(label, scales.length, submenus.length)}
                     </small>
@@ -309,11 +317,10 @@ export default function ScaleNav({
                           >
                             <i />
                             <div>
-                              {sub.label}
+                              {branchNameEs[sub.label] ?? sub.label}
                               <small>
-                                {sub.note ? sub.note + ' · ' : ''}
                                 {sub.levels.length}{' '}
-                                {sub.levels.length === 1 ? 'scale' : 'scales'}
+                                {sub.levels.length === 1 ? 'módulo' : 'módulos'}
                               </small>
                             </div>
                             <ChevronDown size={13} />

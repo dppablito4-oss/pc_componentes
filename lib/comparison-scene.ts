@@ -7,6 +7,7 @@ import {
   type ComparisonViewState,
 } from './comparison-state.ts';
 import { byId } from './manifest.ts';
+import { bilingualPartName } from './locale-es.ts';
 import { isPhysical } from './levels.ts';
 import {
   COMPARISON_ORBIT_DISTANCE,
@@ -348,7 +349,7 @@ export function createComparisonViewer(
     const piece = hit(event, MOUSE_AIM);
     renderer.domElement.style.cursor = piece ? 'help' : 'grab';
     callbacks.hover(
-      piece ? byId[piece.concept].shortName : null,
+      piece ? bilingualPartName(byId[piece.concept]) : null,
       event.clientX,
       event.clientY,
     );

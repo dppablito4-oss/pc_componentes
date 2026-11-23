@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { ArrowUpRight, X, Zap } from 'lucide-react';
 import { hasHardwareAcceleration } from '@/lib/graphics-acceleration';
 
+import { GUIDE_ACCELERATION } from './links';
+
 const seenKey = 'pc-anatomy-performance-tip-v1';
 
 export default function PerformanceTip({ ready }: { ready: boolean }) {
@@ -41,7 +43,7 @@ export default function PerformanceTip({ ready }: { ready: boolean }) {
     // oxlint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
     <aside
       className="performance-tip"
-      aria-label="3D performance tip"
+      aria-label="Sugerencia de rendimiento 3D"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       onFocus={() => setFocused(true)}
@@ -53,21 +55,18 @@ export default function PerformanceTip({ ready }: { ready: boolean }) {
       <Zap size={19} aria-hidden="true" />
       <div>
         <output>
-          <strong>Smoother 3D exploration</strong>
+          <strong>Exploración 3D más fluida</strong>
           <span className="tip-copy">
-            Try enabling browser hardware acceleration for smoother rendering.
+            Activa la aceleración gráfica de tu navegador para mover el modelo
+            con más fluidez.
           </span>
         </output>
-        <a
-          href="/guide/index.html#smoother-3d"
-          target="_blank"
-          rel="noreferrer"
-        >
-          How to enable it <ArrowUpRight size={13} />
+        <a href={GUIDE_ACCELERATION} target="_blank" rel="noreferrer">
+          Cómo activarla <ArrowUpRight size={13} />
         </a>
       </div>
       <button
-        aria-label="Dismiss performance tip"
+        aria-label="Cerrar sugerencia de rendimiento"
         onClick={() => setVisible(false)}
       >
         <X size={17} />

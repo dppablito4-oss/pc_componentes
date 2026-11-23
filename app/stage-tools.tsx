@@ -8,6 +8,7 @@ import {
   Minimize,
   Wind,
 } from 'lucide-react';
+import { partNameEs, bilingualPartName } from '@/lib/locale-es';
 import { byId } from '@/lib/manifest';
 import { hueOfSystem, hueStyle } from '@/lib/palette';
 import {
@@ -20,7 +21,7 @@ import type { LevelId } from '@/lib/levels';
 import type { ReactNode } from 'react';
 
 const views = ['perspective', 'top', 'front', 'back'] as const;
-const viewLabels = ['3D', 'TOP', 'FRONT', 'BACK'];
+const viewLabels = ['3D', 'SUPERIOR', 'FRONTAL', 'TRASERA'];
 
 type Props = {
   children?: ReactNode;
@@ -86,17 +87,17 @@ export default function StageTools({
         });
     } catch {
       setFullscreenError(
-        'Fullscreen is blocked by this browser. Press F11 instead.',
+        'El navegador bloqueó la pantalla completa. Pulsa F11.',
       );
     }
   }, []);
 
   return (
     <div className="stage-tools">
-      <div className="view-controls" aria-label="Camera controls">
+      <div className="view-controls" aria-label="Controles de cámara">
         {views.map((option, i) => {
           const active = flattened ? option === 'top' : view === option;
-          const name = option[0].toUpperCase() + option.slice(1) + ' view';
+          const name = 'Vista ' + viewLabels[i].toLowerCase();
           return (
             <button
               key={option}
@@ -113,8 +114,16 @@ export default function StageTools({
         })}
         <span />
         <button
-          title={fullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
-          aria-label={fullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+          title={
+            fullscreen
+              ? 'Salir de pantalla completa'
+              : 'Abrir pantalla completa'
+          }
+          aria-label={
+            fullscreen
+              ? 'Salir de pantalla completa'
+              : 'Abrir pantalla completa'
+          }
           aria-pressed={fullscreen}
           className={fullscreen ? 'active' : ''}
           onClick={() => void toggleFullscreen()}
@@ -127,18 +136,20 @@ export default function StageTools({
           className={'airflow-toggle' + (showingAirflow ? ' active' : '')}
           title={
             showingAirflow
-              ? 'Hide the path the air takes'
+              ? 'Ocultar el recorrido del aire'
               : assembled
-                ? 'Show the path the air takes through the machine'
-                : 'Show airflow — it draws on the assembled machine'
+                ? 'Mostrar el recorrido del aire por el equipo'
+                : 'Mostrar flujo de aire — it draws on the assembled machine'
           }
-          aria-label={showingAirflow ? 'Hide airflow' : 'Show airflow'}
+          aria-label={
+            showingAirflow ? 'Ocultar flujo de aire' : 'Mostrar flujo de aire'
+          }
           aria-pressed={showingAirflow}
           onClick={onToggleAirflow}
         >
           <Wind size={15} />
-          <span>Airflow</span>
-          <small>{showingAirflow ? 'On' : 'Off'}</small>
+          <span>Aire</span>
+          <small>{showingAirflow ? 'Sí' : 'No'}</small>
         </button>
       )}
       {children}
@@ -152,7 +163,7 @@ export default function StageTools({
           >
             <EyeOff size={15} />
             <span>
-              {hiddenComponents.length} hidden component
+              {hiddenComponents.length} componente oculto
               {hiddenComponents.length === 1 ? '' : 's'}
             </span>
             <ChevronDown size={14} />
@@ -160,8 +171,8 @@ export default function StageTools({
           {hiddenMenuOpen && (
             <div className="hidden-components-menu" id="hidden-components-menu">
               <div className="hidden-menu-heading">
-                <strong>Hidden on this scale</strong>
-                <button onClick={onClearHidden}>Show all</button>
+                <strong>Componentes ocultos en este módulo</strong>
+                <button onClick={onClearHidden}>Mostrar todo</button>
               </div>
               <ul>
                 {hiddenComponents.map((component) => (
@@ -170,9 +181,11 @@ export default function StageTools({
                     style={hueStyle(hueOfSystem(component.category))}
                   >
                     <i />
-                    <span>{component.shortName}</span>
+                    <span title={bilingualPartName(component)}>
+                      {partNameEs(component, true)}
+                    </span>
                     <button
-                      aria-label={`Show ${component.name}`}
+                      aria-label={`Mostrar ${partNameEs(component)}`}
                       onClick={() => onUnhide(component.id)}
                     >
                       <Eye size={14} />

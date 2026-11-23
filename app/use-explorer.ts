@@ -121,7 +121,7 @@ export function useExplorer() {
     [stopDisassembly],
   );
 
-  useAddress(state, goTo);
+  const navigation = useAddress(state, goTo);
 
   const reset = useCallback(() => {
     stopDisassembly();
@@ -422,6 +422,7 @@ export function useExplorer() {
 
   return {
     state,
+    navigation,
     selected,
     opens,
     logical,

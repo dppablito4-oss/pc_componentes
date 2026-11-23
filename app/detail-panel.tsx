@@ -16,7 +16,15 @@ import {
 import { byId, sources, type Concept } from '@/lib/manifest';
 import { hueOfLevel, hueOfSystem, hueStyle } from '@/lib/palette';
 import type { Selection } from '@/lib/explorer-state';
-import { levels, type LevelId } from '@/lib/levels';
+import { type LevelId } from '@/lib/levels';
+import {
+  bilingualPartName,
+  categoryEs,
+  componentDescriptionEs,
+  levelNameEs,
+  partNameEs,
+  specificationNameEs,
+} from '@/lib/locale-es';
 
 type Props = {
   /** What the selected piece describes: in a custom build, the part installed. */
@@ -50,6 +58,9 @@ export default function DetailPanel({
   // Actions apply to the piece on stage, which keeps its own id whatever part
   // it describes.
   const piece = selection?.concept ?? selected?.id;
+  const description = selected
+    ? componentDescriptionEs[selected.id]
+    : undefined;
   return (
     <Sheet
       open={!!selected}
@@ -70,40 +81,46 @@ export default function DetailPanel({
             <div className="detail-top">
               <span className="detail-kind">
                 <i aria-hidden="true" />
-                {selected.category} /{' '}
+                {categoryEs[selected.category]} /{' '}
                 {selected.representationType === 'logical'
-                  ? 'ARCHITECTURE'
-                  : 'HARDWARE'}
+                  ? 'Arquitectura'
+                  : 'Hardware'}
               </span>
-              <button aria-label="Close component details" onClick={onClose}>
+              <button
+                aria-label="Cerrar ficha del componente"
+                onClick={onClose}
+              >
                 <X size={17} />
               </button>
             </div>
-            <SheetTitle>{selected.name}</SheetTitle>
+            <SheetTitle>{partNameEs(selected)}</SheetTitle>
+            <p className="part-english" lang="en">
+              {selected.name}
+            </p>
             <div className="instance-label">
               {selection?.instance !== undefined
-                ? 'INSTANCE ' + String(selection.instance + 1).padStart(2, '0')
-                : 'COMPONENT GROUP'}
+                ? 'Pieza ' + String(selection.instance + 1).padStart(2, '0')
+                : 'Grupo de componentes'}
             </div>
-            <SheetDescription>{selected.description}</SheetDescription>
-            <div className="purpose">
-              <h3>What it does</h3>
-              <p>{selected.purpose}</p>
-            </div>
-            <div className="quantity">{selected.quantity}</div>
+            <SheetDescription className={description ? undefined : 'sr-only'}>
+              {description ?? 'Especificaciones y fuentes del componente.'}
+            </SheetDescription>
             <dl>
               {Object.entries(selected.specifications).map(([k, v]) => (
                 <div key={k}>
-                  <dt>{k}</dt>
+                  <dt title={k}>{specificationNameEs(k)}</dt>
                   <dd>{v}</dd>
                 </div>
               ))}
             </dl>
             {selected.parent && (
               <div className="parent-link">
-                Part of{' '}
-                <button onClick={() => onSelectConcept(selected.parent!)}>
-                  {byId[selected.parent].shortName}
+                Pertenece a{' '}
+                <button
+                  title={bilingualPartName(byId[selected.parent])}
+                  onClick={() => onSelectConcept(selected.parent!)}
+                >
+                  {partNameEs(byId[selected.parent], true)}
                   <ChevronRight size={12} />
                 </button>
               </div>
@@ -114,31 +131,39 @@ export default function DetailPanel({
                 style={hueStyle(hueOfLevel(opens))}
                 onClick={() => onDive(piece!)}
               >
-                Take apart {levels[opens].name}
+                Explorar {levelNameEs(opens)}
                 <ChevronRight size={17} />
               </button>
             )}
             <div className="detail-actions">
               <button onClick={onIsolate}>
                 <Focus size={14} />
-                {isolated ? 'Show context' : 'Isolate'}
+                {isolated ? 'Mostrar entorno' : 'Aislar'}
               </button>
               <button onClick={onFocus}>
                 <Maximize size={14} />
-                Focus
+                Enfocar
               </button>
               <button onClick={() => onHide(piece!)}>
                 <EyeOff size={14} />
-                Hide
+                Ocultar
               </button>
             </div>
-            <p className="accuracy">{selected.physicalAccuracy}</p>
+            <details className="part-original-notes">
+              <summary>Descripción técnica en inglés</summary>
+              <div lang="en">
+                <p>{selected.description}</p>
+                <p>{selected.purpose}</p>
+                <p>{selected.quantity}</p>
+                <p className="accuracy">{selected.physicalAccuracy}</p>
+              </div>
+            </details>
             {selected.sources.length > 0 && (
               <div className="source-links">
-                <h3>References & architecture</h3>
+                <h3>Fuentes y arquitectura</h3>
                 <p>
-                  Manufacturer documents and standards explain this component
-                  family. Illustrative geometry is not a product schematic.
+                  Consulta la documentación del fabricante y los estándares
+                  técnicos.
                 </p>
                 {selected.sources.map((s) => (
                   <a

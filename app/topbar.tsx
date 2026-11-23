@@ -43,7 +43,11 @@ export default function Topbar({
 }: Props) {
   return (
     <header className="topbar">
-      <button className="brand" onClick={onReset} aria-label="Reset PC Anatomy">
+      <button
+        className="brand"
+        onClick={onReset}
+        aria-label="Restablecer PC Anatomy"
+      >
         <span className="brand-icon">
           <Cpu size={21} />
         </span>
@@ -58,7 +62,7 @@ export default function Topbar({
       >
         <GitHubMark size={13} />
         <span className="byline-text">
-          <span className="byline-prefix">Created by </span>
+          <span className="byline-prefix">Creado por </span>
           <strong>Yoseph</strong>
         </span>
       </a>
@@ -69,47 +73,47 @@ export default function Topbar({
         <button
           className="chip chip-accent feedback-button"
           onClick={onFeedback}
-          title="Report a mistake, suggest an idea or get in touch about working together"
+          title="Reporta un error, sugiere una idea o propón una colaboración"
         >
           <MessageSquare size={15} />
           {/* One of the two is hidden at a time, so the button's name is
               always the label that is showing. */}
-          <span className="label-full">Feedback / Idea / Collaboration</span>
-          <span className="label-short">Feedback</span>
+          <span className="label-full">Comentarios</span>
+          <span className="label-short">Opinar</span>
         </button>
         <a
           className="chip guide-link"
           href={GUIDE}
-          title="Learn about PC components"
+          title="Aprende sobre los componentes de una PC"
         >
           <BookOpen size={15} />
-          <span>Guide</span>
+          <span>Guía</span>
         </a>
         <button
           className="mobile-layers"
           onClick={onToggleLayers}
-          aria-label="Toggle systems"
+          aria-label="Mostrar u ocultar sistemas"
           aria-expanded={layers}
         >
           <Layers3 size={19} />
         </button>
         <button
           className="search-button"
-          aria-label="Find a component"
+          aria-label="Buscar un componente"
           onClick={onSearch}
         >
           <Search size={16} />
-          <span>Search components</span>
+          <span>Buscar componentes</span>
           <kbd>/</kbd>
         </button>
         <button
           className="chip info-button"
-          aria-label="About and sources"
-          title="About and credits"
+          aria-label="Acerca del visor y sus fuentes"
+          title="Acerca del visor y créditos"
           onClick={onAbout}
         >
           <Info size={16} />
-          <span>About</span>
+          <span>Acerca de</span>
         </button>
       </div>
     </header>

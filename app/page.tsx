@@ -15,7 +15,6 @@ import StageHeading from './stage-heading';
 import StageTools from './stage-tools';
 import PowerControls from './power-controls';
 import Disassembly from './disassembly';
-import SearchDialog from './search-dialog';
 import DetailPanel from './detail-panel';
 import AboutDialog from './about-dialog';
 import ComparisonWorkbench from './comparison-workbench';
@@ -30,6 +29,7 @@ const loadBuildWorkspace = () => import('./build-workspace');
 const BuildWorkspace = lazy(loadBuildWorkspace);
 /** Off the first download too: most visits never open it. */
 const FeedbackDialog = lazy(() => import('./feedback-dialog'));
+const SearchDialog = lazy(() => import('./search-dialog'));
 
 export default function Home() {
   const explorer = useExplorer();
@@ -185,13 +185,13 @@ export default function Home() {
             // behind it.
             <button
               className="drawer-scrim"
-              aria-label="Close systems"
+              aria-label="Cerrar sistemas"
               onClick={() => explorer.setLayers(false)}
             />
           )}
           <aside
             className={'explorer' + (layers ? ' mobile-open' : '')}
-            aria-label="System visibility"
+            aria-label="Visibilidad de sistemas"
           >
             <ScaleNav
               level={state.level}
@@ -215,6 +215,7 @@ export default function Home() {
             />
           </aside>
           <StageHeading
+            navigation={explorer.navigation}
             level={state.level}
             explode={state.explode}
             logical={logical}
@@ -231,16 +232,16 @@ export default function Home() {
         onSelect={building ? pointAt : choose}
         onCount={setCount}
         onDived={explorer.arrive}
-        hoverHint={building ? 'Click to find its slot' : undefined}
+        hoverHint={building ? 'Haz clic para ubicar la pieza' : undefined}
       />
       {building ? null : (
         <>
           {count === 0 && (
             <div className="empty-scene">
               <EyeOff size={27} />
-              <h3>No structures visible</h3>
+              <h3>No hay componentes visibles</h3>
               <button onClick={explorer.showEverything}>
-                Show all systems
+                Mostrar todos los sistemas
               </button>
             </div>
           )}
@@ -276,13 +277,17 @@ export default function Home() {
             onSetExplode={explorer.setExplode}
             onReset={explorer.reset}
           />
-          <SearchDialog
-            open={search}
-            onOpenChange={setSearch}
-            query={query}
-            onQueryChange={setQuery}
-            onSelect={selectResult}
-          />
+          {search && (
+            <Suspense fallback={null}>
+              <SearchDialog
+                open={search}
+                onOpenChange={setSearch}
+                query={query}
+                onQueryChange={setQuery}
+                onSelect={selectResult}
+              />
+            </Suspense>
+          )}
           <DetailPanel
             selected={selected}
             selection={state.selection}
@@ -309,7 +314,7 @@ export default function Home() {
               selection: selected
                 ? `${selected.name} (${levels[state.level].name})`
                 : levels[state.level].name,
-              language: document.documentElement.lang || 'en',
+              language: document.documentElement.lang || 'es',
             })}
           />
         </Suspense>

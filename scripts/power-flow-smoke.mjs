@@ -62,56 +62,56 @@ try {
   await ready();
   await routes('');
   await capture('power-before');
-  await click('Show power flow');
+  await click('Mostrar flujo de alimentación');
   await routes('atx,eps,gpu,sata,slot');
   await capture('power-all');
   for (const [target, expected] of [
     ['CPU', 'eps'],
     ['GPU', 'atx,gpu,slot'],
-    ['Storage', 'sata'],
+    ['Discos', 'sata'],
   ]) {
     await click(target);
     await routes(expected);
     await capture(`power-${target.toLowerCase()}`);
   }
   await click('GPU');
-  await click('Hide Board');
+  await click('Ocultar Placa base');
   await routes('gpu');
-  await click('Show Board');
+  await click('Mostrar Placa base');
   await routes('atx,gpu,slot');
-  await click('Inspect Graphics card: 12V-2x6');
+  await click('Inspeccionar Graphics card: 12V-2x6');
   await page
-    .getByRole('heading', { name: 'Graphics card', exact: true })
+    .getByRole('heading', { name: 'Tarjeta gráfica', exact: true })
     .waitFor();
-  await click('Isolate');
+  await click('Aislar');
   await routes('');
-  await click('Show context');
+  await click('Mostrar entorno');
   await routes('atx,gpu,slot');
-  await click('Hide');
+  await click('Ocultar');
   await routes('atx');
-  await click('Show Graphics card');
+  await click('Mostrar Tarjeta gráfica');
   await routes('atx,gpu,slot');
-  await click('Dissection');
+  await click('Desmontaje');
   await ready('pc', 50);
   await routes('');
   assert.match(await page.locator('.power-status').innerText(), /Reassemble/);
-  await click('Assembled');
+  await click('Montado');
   await ready();
   await routes('atx,gpu,slot');
-  await click('Inspect Graphics card: 12V-2x6');
+  await click('Inspeccionar Graphics card: 12V-2x6');
   await page
-    .getByRole('button', { name: /^Take apart / })
+    .getByRole('button', { name: /^Explorar / })
     .evaluate((button) => button.click());
   await ready('card');
   assert.equal(await page.locator('.power-toggle').count(), 0);
   await page.goBack();
   await ready();
   await routes('atx,gpu,slot');
-  await click('Reset camera and assembly');
+  await click('Restablecer cámara y montaje');
   await ready();
   await routes('');
   assert.equal(await page.locator('.power-panel').count(), 0);
-  await click('Show power flow');
+  await click('Mostrar flujo de alimentación');
   await click('CPU');
   await routes('eps');
   // Keyboard activation while reduced motion is enabled.
@@ -144,10 +144,10 @@ try {
     await capture(`power-mobile-${width}`);
     if (width <= 700) {
       assert.equal(await page.locator('.power-legend').isVisible(), false);
-      await click('Details');
+      await click('Detalles');
       assert.equal(await page.locator('.power-legend').isVisible(), true);
       await capture(`power-mobile-${width}-details`);
-      await click('Less');
+      await click('Menos');
     }
   }
   assert.deepEqual(errors, []);
@@ -157,9 +157,9 @@ try {
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.reload();
   await ready();
-  await click('Show power flow');
+  await click('Mostrar flujo de alimentación');
   await routes('atx,eps,gpu,sata,slot');
-  await click('Hide power flow');
+  await click('Ocultar flujo de alimentación');
   await routes('');
   assert.deepEqual(errors, []);
   console.log(

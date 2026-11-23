@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import {
   canComparePhysicalScale,
-  comparisonCategoryLabel,
+  comparisonCategoryEs,
   comparisonItem,
   createComparisonState,
   selectComparisonItem,
@@ -31,6 +31,7 @@ import ComparisonPicker from './comparison-picker';
 import ComparisonViewer from './comparison-viewer';
 import ComparisonSpecs from './comparison-specs';
 import Disassembly from './disassembly';
+import { partNameEs } from '@/lib/locale-es';
 import { EXPLORER } from './links';
 import { useDisassemblyPlayback } from './use-disassembly-playback';
 import './comparison.css';
@@ -38,15 +39,16 @@ import './comparison.css';
 type Props = { initialLevel: ComparisonLevel; onExit: () => void };
 
 function framingNote(framing: ComparisonFraming, trueSizeAvailable: boolean) {
-  if (framing === 'scale') return 'Same physical scale in both panes.';
+  if (framing === 'scale')
+    return 'Ambos modelos tienen la misma escala física.';
   return trueSizeAvailable
-    ? 'Each model fits its pane. Sizes are not relative.'
-    : 'Each model fits its pane. Diagrams and illustrative parts have no physical scale.';
+    ? 'Cada modelo se ajusta a su panel y tiene su propia escala.'
+    : 'Cada modelo se ajusta a su panel. Los diagramas ilustrativos carecen de escala física.';
 }
 
 function disassemblyTitle(left: ComparisonItem, right: ComparisonItem) {
-  if (left.kind !== right.kind) return 'Explore both';
-  return left.kind === 'logical' ? 'Expand both' : 'Disassemble both';
+  if (left.kind !== right.kind) return 'Explorar ambos';
+  return left.kind === 'logical' ? 'Expandir ambos' : 'Desmontar ambos';
 }
 
 type PartSelectorProps = {
@@ -63,14 +65,14 @@ function PartSelector({ side, item, buttonRef, onOpen }: PartSelectorProps) {
       className={`comparison-selector ${side}`}
       style={hueStyle(hueOfCategory(item.category))}
       ref={buttonRef}
-      aria-label={`Choose part ${sideLetter(side)}`}
+      aria-label={`Elegir pieza ${sideLetter(side)}`}
       aria-haspopup="dialog"
       onClick={onOpen}
     >
       <span className="comparison-letter">{sideLetter(side)}</span>
       <span className="comparison-selected-part">
-        <strong>{item.shortName}</strong>
-        <small>{comparisonCategoryLabel(item.category)}</small>
+        <strong>{partNameEs(item, true)}</strong>
+        <small>{comparisonCategoryEs[item.category]}</small>
       </span>
       <ChevronDown size={17} aria-hidden="true" />
     </button>
@@ -148,45 +150,45 @@ export default function ComparisonWorkbench({ initialLevel, onExit }: Props) {
           <button
             ref={specsButton}
             className="comparison-specs-button"
-            aria-label="Specs"
+            aria-label="Especificaciones"
             onClick={() =>
               setState((current) => setComparisonSpecsOpen(current, true))
             }
           >
             <BarChart3 size={16} />
-            <span>Specs</span>
+            <span>Datos</span>
           </button>
           <button
             className="comparison-exit"
             onClick={onExit}
-            aria-label="Back to explorer"
+            aria-label="Volver al explorador"
           >
             <ChevronLeft size={17} />
-            <span>Back to explorer</span>
+            <span>Volver al explorador</span>
           </button>
         </div>
       </header>
-      <section className="comparison-setup" aria-label="Comparison pair">
+      <section className="comparison-setup" aria-label="Piezas comparadas">
         <div className="comparison-pair">
           {selector('left')}
           <button
             className="comparison-swap"
             onClick={() => setState(swapComparisonSides)}
-            aria-label="Swap comparison sides"
+            aria-label="Intercambiar los modelos"
           >
             <ArrowLeftRight size={18} />
           </button>
           {selector('right')}
         </div>
         <div className="comparison-framing">
-          <fieldset aria-label="Model scale">
+          <fieldset aria-label="Escala de los modelos">
             <button
               aria-pressed={state.framing === 'fit'}
               onClick={() =>
                 setState((current) => setComparisonFraming(current, 'fit'))
               }
             >
-              Fit each
+              Ajustar por separado
             </button>
             <button
               aria-pressed={state.framing === 'scale'}
@@ -196,7 +198,7 @@ export default function ComparisonWorkbench({ initialLevel, onExit }: Props) {
                 setState((current) => setComparisonFraming(current, 'scale'))
               }
             >
-              True size
+              Misma escala
             </button>
           </fieldset>
           <p id="comparison-scale-note">
@@ -206,7 +208,7 @@ export default function ComparisonWorkbench({ initialLevel, onExit }: Props) {
       </section>
       <fieldset
         className="comparison-mobile-switch"
-        aria-label="Visible comparison side"
+        aria-label="Lado visible de la comparación"
       >
         {(['left', 'right'] as const).map((side) => (
           <button
@@ -216,14 +218,14 @@ export default function ComparisonWorkbench({ initialLevel, onExit }: Props) {
               setState((current) => setComparisonActiveSide(current, side))
             }
           >
-            {side === 'left' ? 'A · Left' : 'B · Right'}
+            {side === 'left' ? 'A · Izquierda' : 'B · Derecha'}
           </button>
         ))}
       </fieldset>
       <div className="comparison-divider" aria-hidden="true" />
       <ComparisonViewer key={viewerRevision} state={viewerState} />
       <div className="sr-only" aria-live="polite">
-        Comparing {leftItem.name} with {rightItem.name}.
+        Comparando {partNameEs(leftItem)} con {partNameEs(rightItem)}.
       </div>
       <Disassembly
         level={state.left}
@@ -233,10 +235,10 @@ export default function ComparisonWorkbench({ initialLevel, onExit }: Props) {
         onToggleAuto={toggleAuto}
         onSetExplode={setExplode}
         onReset={reset}
-        sectionLabel="Shared disassembly control"
+        sectionLabel="Controles de desmontaje compartidos"
         title={disassemblyTitle(leftItem, rightItem)}
-        sliderLabel="Disassemble or expand both models"
-        valueText={`${Math.round(state.explode)} percent for both models`}
+        sliderLabel="Desmontar o expandir ambos modelos"
+        valueText={`${Math.round(state.explode)} por ciento para ambos modelos`}
       />
       <ComparisonSpecs
         left={state.left}

@@ -10,7 +10,7 @@ import {
 import {
   comparisonCategories,
   comparisonItem,
-  comparisonItemPath,
+  comparisonCategoryEs,
   filterComparisonItems,
   otherSide,
   sideLetter,
@@ -19,7 +19,8 @@ import {
   type ComparisonLevel,
   type ComparisonSide,
 } from '@/lib/comparison-state';
-import { levels, systemRoots } from '@/lib/levels';
+import { levelPath, systemRoots } from '@/lib/levels';
+import { levelNameEs, partNameEs } from '@/lib/locale-es';
 import { hueOfCategory, hueStyle } from '@/lib/palette';
 
 type Props = {
@@ -49,18 +50,20 @@ function PickerResult({ item, selected, takenBy, onChoose }: ResultProps) {
         onClick={onChoose}
       >
         <span className="comparison-result-copy">
-          <strong>{item.name}</strong>
-          <small>{comparisonItemPath(item)}</small>
-          <span>{item.note}</span>
+          <strong>{partNameEs(item)}</strong>
+          <span className="part-english" lang="en">
+            {item.name}
+          </span>
+          <small>{levelPath(item.level).map(levelNameEs).join(' / ')}</small>
         </span>
         <span className="comparison-result-kind">
           {takenBy
-            ? `On ${takenBy}`
+            ? `En ${takenBy}`
             : item.kind === 'logical'
-              ? 'Diagram'
+              ? 'Diagrama'
               : 'Hardware'}
         </span>
-        {selected && <Check size={16} aria-label="Selected" />}
+        {selected && <Check size={16} aria-label="Seleccionada" />}
       </button>
     </li>
   );
@@ -123,12 +126,12 @@ export default function ComparisonPicker({
       >
         <header className="comparison-picker-heading">
           <div>
-            <DialogTitle>Choose part {sideLetter(side)}</DialogTitle>
+            <DialogTitle>Elegir pieza {sideLetter(side)}</DialogTitle>
             <DialogDescription>
-              Browse any system. Your other choice stays in place.
+              Selecciona un componente de cualquier equipo.
             </DialogDescription>
           </div>
-          <button aria-label="Close part picker" onClick={onClose}>
+          <button aria-label="Cerrar selector de piezas" onClick={onClose}>
             <X size={20} />
           </button>
         </header>
@@ -137,16 +140,16 @@ export default function ComparisonPicker({
             <Search size={17} aria-hidden="true" />
             <input
               ref={search}
-              aria-label="Search parts"
-              placeholder="Search parts, models or architecture…"
+              aria-label="Buscar piezas"
+              placeholder="Buscar piezas, modelos o arquitectura…"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
             />
           </label>
           <label className="comparison-system-filter">
-            <span>System</span>
+            <span>Equipo</span>
             <select
-              aria-label="System"
+              aria-label="Equipo"
               value={system ?? 'all'}
               onChange={(event) =>
                 setSystem(
@@ -156,23 +159,26 @@ export default function ComparisonPicker({
                 )
               }
             >
-              <option value="all">All systems</option>
+              <option value="all">Todos los equipos</option>
               {systemRoots.map((root) => (
                 <option key={root} value={root}>
-                  {levels[root].name}
+                  {levelNameEs(root)}
                 </option>
               ))}
             </select>
           </label>
         </div>
         <div className="comparison-picker-body">
-          <nav className="comparison-category-nav" aria-label="Part categories">
+          <nav
+            className="comparison-category-nav"
+            aria-label="Categorías de piezas"
+          >
             <button
               aria-pressed={!category}
               style={hueStyle('system')}
               onClick={() => setCategory(undefined)}
             >
-              All parts <span aria-hidden="true">{matches.length}</span>
+              Todas las piezas <span aria-hidden="true">{matches.length}</span>
             </button>
             {comparisonCategories.map((entry) => (
               <button
@@ -182,29 +188,29 @@ export default function ComparisonPicker({
                 onClick={() => setCategory(entry.id)}
               >
                 <i aria-hidden="true" />
-                {entry.label}
+                {comparisonCategoryEs[entry.id]}
                 <span aria-hidden="true">{countIn(entry.id)}</span>
               </button>
             ))}
           </nav>
           <div className="comparison-results">
             <output className="comparison-result-count">
-              {results.length} {results.length === 1 ? 'part' : 'parts'}
+              {results.length} {results.length === 1 ? 'pieza' : 'piezas'}
             </output>
             {!results.length && (
               <div className="comparison-empty">
-                <strong>No matching parts</strong>
-                <p>Try another category, system or search.</p>
-                <button onClick={clear}>Clear filters</button>
+                <strong>No se encontraron piezas</strong>
+                <p>Prueba con otra categoría, equipo o búsqueda.</p>
+                <button onClick={clear}>Limpiar filtros</button>
               </div>
             )}
             {groups.map((group) => (
               <section
                 key={group.id}
-                aria-label={group.label}
+                aria-label={comparisonCategoryEs[group.id]}
                 style={hueStyle(hueOfCategory(group.id))}
               >
-                <h3>{group.label}</h3>
+                <h3>{comparisonCategoryEs[group.id]}</h3>
                 <ul>
                   {group.items.map((item) => (
                     <PickerResult

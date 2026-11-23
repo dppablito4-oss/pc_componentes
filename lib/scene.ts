@@ -13,6 +13,7 @@ import { airflowShown, airflowStrength } from './airflow.ts';
 import { powerStrength, visiblePowerRoutes } from './power-flow-policy.ts';
 import type { PowerTick } from './power-flow.ts';
 import { byId, openLevel } from './manifest';
+import { bilingualPartName, partNameEs } from './locale-es';
 import { towerKey } from './desktop-build.ts';
 import type { ExplorerState, Selection } from './explorer-state.ts';
 import { isPhysical, levels } from './levels.ts';
@@ -543,7 +544,7 @@ export function createViewer(
         candidates.push({
           concept: p.concept,
           instance: p.instance,
-          name: byId[p.concept].shortName,
+          name: partNameEs(byId[p.concept], true),
           x: ((projected.x + 1) / 2) * w,
           y: ((1 - projected.y) / 2) * h,
           size: Math.hypot(
@@ -663,7 +664,7 @@ export function createViewer(
     renderer.domElement.style.cursor = p ? 'pointer' : 'grab';
     callbacks.hover(
       p
-        ? byId[p.concept].shortName +
+        ? bilingualPartName(byId[p.concept]) +
             (model.pieces.filter((x) => x.concept === p.concept).length > 1
               ? ' ' + String(p.instance + 1).padStart(2, '0')
               : '')

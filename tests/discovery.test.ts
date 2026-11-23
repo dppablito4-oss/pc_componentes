@@ -1,5 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { levelNameEs, partNameEs } from '../lib/locale-es.ts';
 import fs from 'node:fs';
 import { manifest, isLevelRoot } from '../lib/manifest.ts';
 import { isPhysical, levelIds, levels, rootLevel } from '../lib/levels.ts';
@@ -143,7 +144,7 @@ await test('a link can open the build workspace, with the cooler and the drives'
     undefined,
   );
   assert.equal(searchToPlace('?scale=pc&mode=nonsense').workspace, undefined);
-  assert.equal(placeTitle(place), 'Build your PC · PC Anatomy');
+  assert.equal(placeTitle(place), 'Arma tu PC · PC Anatomy');
 });
 
 await test('a place is titled after what it shows', () => {
@@ -151,12 +152,12 @@ await test('a place is titled after what it shows', () => {
   const part = manifest.find((c) => c.level === 'pc' && !isLevelRoot(c))!;
   assert.equal(
     placeTitle({ level: 'pc', selection: { concept: part.id }, explode: 0 }),
-    `${part.name} · PC Anatomy`,
+    `${partNameEs(part)} · PC Anatomy`,
   );
   const level = levelIds.find((id) => id !== rootLevel)!;
   assert.equal(
     placeTitle({ level, selection: null, explode: 0 }),
-    `${levels[level].name} · PC Anatomy`,
+    `${levelNameEs(level)} · PC Anatomy`,
   );
 });
 

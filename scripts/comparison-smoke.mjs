@@ -70,17 +70,17 @@ try {
   const capture = (name) =>
     page.screenshot({ path: `${output}/${name}.png`, timeout: 60000 });
   const openPicker = async (side) => {
-    await click(`Choose part ${side}`);
-    const dialog = page.getByRole('dialog', { name: `Choose part ${side}` });
+    await click(`Elegir pieza ${side}`);
+    const dialog = page.getByRole('dialog', { name: `Elegir pieza ${side}` });
     await dialog.waitFor();
     return dialog;
   };
   const clearFilters = async (dialog) => {
-    await dialog.getByRole('textbox', { name: 'Search parts' }).fill('');
-    await dialog.getByLabel('System', { exact: true }).selectOption('all');
+    await dialog.getByRole('textbox', { name: 'Buscar piezas' }).fill('');
+    await dialog.getByLabel('Equipo', { exact: true }).selectOption('all');
     await click(
-      'All parts',
-      dialog.getByRole('navigation', { name: 'Part categories' }),
+      'Todas las piezas',
+      dialog.getByRole('navigation', { name: 'Categorías de piezas' }),
     );
   };
   const choose = async (side, level) => {
@@ -115,7 +115,7 @@ try {
     undefined,
     { timeout: 60000 },
   );
-  await click('Compare components');
+  await click('Comparar componentes');
   await ready();
   console.log(
     'Checking independent choices, categories, system filters and search',
@@ -131,27 +131,27 @@ try {
     true,
   );
   await click(
-    'Processors',
-    dialog.getByRole('navigation', { name: 'Part categories' }),
+    'Procesadores',
+    dialog.getByRole('navigation', { name: 'Categorías de piezas' }),
   );
   assert.equal(
     await dialog.locator('button[data-level="legioncpu"]').count(),
     1,
   );
   assert.equal(await dialog.locator('button[data-level="nvme"]').count(), 0);
-  await dialog.getByLabel('System', { exact: true }).selectOption('macbook');
+  await dialog.getByLabel('Equipo', { exact: true }).selectOption('macbook');
   assert.equal(await dialog.locator('button[data-level="maccpu"]').count(), 1);
   assert.equal(
     await dialog.locator('button[data-level="legioncpu"]').count(),
     0,
   );
   await dialog
-    .getByRole('textbox', { name: 'Search parts' })
+    .getByRole('textbox', { name: 'Buscar piezas' })
     .fill('zz-no-such-part-zz');
   assert.equal(await dialog.locator('button[data-level]').count(), 0);
-  assert.match(await dialog.innerText(), /No matching parts/);
+  assert.match(await dialog.innerText(), /No se encontraron piezas/);
   await clearFilters(dialog);
-  await dialog.getByRole('textbox', { name: 'Search parts' }).fill('5800H');
+  await dialog.getByRole('textbox', { name: 'Buscar piezas' }).fill('5800H');
   assert.equal(
     await dialog.locator('button[data-level="legioncpu"]').count(),
     1,
@@ -162,24 +162,27 @@ try {
   await dialog.waitFor({ state: 'hidden' });
   assert.equal(
     await page
-      .getByRole('button', { name: 'Choose part A', exact: true })
+      .getByRole('button', { name: 'Elegir pieza A', exact: true })
       .evaluate((el) => el === document.activeElement),
     true,
   );
   await ready('legioncpu:ryzen');
-  await click('Specs');
+  await click('Especificaciones');
   await page.locator('.comparison-specs-grid').waitFor();
   const cpuSpecs = await page.locator('.comparison-specs-grid').innerText();
   // Shared labels align; fields only one catalogue entry lists stay visible
   // as gaps instead of borrowing values from another part.
-  assert.match(cpuSpecs, /Cores\t8 cores \/ 16 threads\t16 cores, 32 threads/);
-  assert.match(cpuSpecs, /Architecture\tNot listed\tZen 5/);
+  assert.match(
+    cpuSpecs,
+    /Núcleos\t8 cores \/ 16 threads\t16 cores, 32 threads/,
+  );
+  assert.match(cpuSpecs, /Arquitectura\tSin datos\tZen 5/);
   assert.doesNotMatch(
     await page.locator('.comparison-specs').innerText(),
     /undefined|NaN/,
   );
   await capture('comparison-cpu-specs');
-  await click('Close specification comparison');
+  await click('Cerrar comparación de especificaciones');
 
   console.log(
     'Checking arbitrary physical/logical pairs and independent specifications',
@@ -187,11 +190,11 @@ try {
   await choose('B', 'nvme');
   assert.equal(
     await page
-      .getByRole('button', { name: 'True size', exact: true })
+      .getByRole('button', { name: 'Misma escala', exact: true })
       .isDisabled(),
     true,
   );
-  await click('Specs');
+  await click('Especificaciones');
   await page.locator('.comparison-spec-card').first().waitFor();
   assert.equal(await page.locator('.comparison-spec-card').count(), 2);
   assert.equal(await page.locator('.comparison-specs-grid').count(), 0);
@@ -200,13 +203,13 @@ try {
     /undefined|NaN/,
   );
   await capture('comparison-mixed-specs');
-  await click('Close specification comparison');
-  await click('Swap comparison sides');
+  await click('Cerrar comparación de especificaciones');
+  await click('Intercambiar los modelos');
   await ready('nvme:legioncpu');
   await capture('comparison-mixed');
-  await click('Dissection');
+  await click('Desmontaje');
   await ready('nvme:legioncpu', 50);
-  await click('Reset camera and assembly');
+  await click('Restablecer cámara y montaje');
   await ready('nvme:legioncpu');
 
   console.log('Checking physical scale and cross-system storage');
@@ -214,15 +217,15 @@ try {
   await choose('B', 'legionstorage');
   assert.equal(
     await page
-      .getByRole('button', { name: 'True size', exact: true })
+      .getByRole('button', { name: 'Misma escala', exact: true })
       .isDisabled(),
     false,
   );
-  await click('True size');
+  await click('Misma escala');
   await ready('ssd:legionstorage');
   assert.equal(
     await page
-      .getByRole('button', { name: 'True size', exact: true })
+      .getByRole('button', { name: 'Misma escala', exact: true })
       .getAttribute('aria-pressed'),
     'true',
   );
@@ -230,13 +233,13 @@ try {
   await choose('B', 'maccpu');
   assert.equal(
     await page
-      .getByRole('button', { name: 'Fit each', exact: true })
+      .getByRole('button', { name: 'Ajustar por separado', exact: true })
       .getAttribute('aria-pressed'),
     'true',
   );
   assert.equal(
     await page
-      .getByRole('button', { name: 'True size', exact: true })
+      .getByRole('button', { name: 'Misma escala', exact: true })
       .isDisabled(),
     true,
   );
@@ -256,13 +259,13 @@ try {
     await ready('macbattery:legionbattery');
     await assertNoOverflow();
     if (width < 700) {
-      await click('B · Right');
+      await click('B · Derecha');
       await page.waitForFunction(
         () =>
           document.querySelector('.comparison-viewport')?.dataset.mode ===
           'right',
       );
-      await click('A · Left');
+      await click('A · Izquierda');
       await page.waitForFunction(
         () =>
           document.querySelector('.comparison-viewport')?.dataset.mode ===
@@ -281,16 +284,18 @@ try {
         bounds.y + bounds.height <= height + 1,
       JSON.stringify(bounds),
     );
-    await dialog.getByRole('textbox', { name: 'Search parts' }).fill('display');
+    await dialog
+      .getByRole('textbox', { name: 'Buscar piezas' })
+      .fill('display');
     assert.ok((await dialog.locator('button[data-level]').count()) >= 2);
     await capture(`comparison-${width}-picker`);
     await page.keyboard.press('Escape');
     await dialog.waitFor({ state: 'hidden' });
-    await click('Specs');
+    await click('Especificaciones');
     await page.locator('.comparison-specs').waitFor();
     await assertNoOverflow();
     await capture(`comparison-${width}-specs`);
-    await click('Close specification comparison');
+    await click('Cerrar comparación de especificaciones');
   }
 
   console.log(
@@ -298,31 +303,31 @@ try {
   );
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page
-    .getByRole('button', { name: 'Choose part B', exact: true })
+    .getByRole('button', { name: 'Elegir pieza B', exact: true })
     .focus();
   await page.keyboard.press('Enter');
-  dialog = page.getByRole('dialog', { name: 'Choose part B' });
+  dialog = page.getByRole('dialog', { name: 'Elegir pieza B' });
   await dialog.waitFor();
   await page.keyboard.press('Escape');
   await dialog.waitFor({ state: 'hidden' });
-  await click('Back to explorer');
+  await click('Volver al explorador');
   await page.waitForFunction(
     () => document.querySelector('.viewport')?.dataset.level === 'pc',
   );
   assert.equal(
     await page
-      .getByRole('button', { name: 'Compare components', exact: true })
+      .getByRole('button', { name: 'Comparar componentes', exact: true })
       .evaluate((el) => el === document.activeElement),
     true,
   );
   await page.emulateMedia({ reducedMotion: 'no-preference' });
-  await click('Compare components');
+  await click('Comparar componentes');
   await ready();
   await choose('A', 'nvme');
   await choose('B', 'maccell');
-  await click('Dissection');
+  await click('Desmontaje');
   await ready('nvme:maccell', 50);
-  await click('Reset camera and assembly');
+  await click('Restablecer cámara y montaje');
   await ready('nvme:maccell');
 
   console.log(
@@ -386,7 +391,7 @@ try {
   await page.setViewportSize({ width: 390, height: 844 });
   await ready('nvme:fan');
   await sleeps();
-  await click('B · Right');
+  await click('B · Derecha');
   await page.waitForFunction(
     () =>
       document.querySelector('.comparison-viewport')?.dataset.mode === 'right',
@@ -397,13 +402,13 @@ try {
     (await frames()) > beforeAnimation,
     'The visible fan stopped animating',
   );
-  await click('A · Left');
+  await click('A · Izquierda');
   await page.waitForFunction(
     () =>
       document.querySelector('.comparison-viewport')?.dataset.mode === 'left',
   );
   await sleeps();
-  await click('Back to explorer');
+  await click('Volver al explorador');
   assert.deepEqual(errors, []);
   console.log(
     'Comparison smoke passed: all systems, categories, search, independent choices, duplicate exclusion, specs, swap, scale modes, disassembly, responsive layouts, keyboard, focus and both motion preferences.',

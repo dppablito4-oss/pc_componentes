@@ -58,6 +58,7 @@ import {
   type DesktopBuild,
 } from '@/lib/desktop-build';
 import { partFacts, type Meter } from '@/lib/part-facts';
+import { spanishComponentName } from '@/lib/component-names-es';
 import './build.css';
 
 const statusIcon = {
@@ -66,9 +67,9 @@ const statusIcon = {
   fail: CircleX,
 } satisfies Record<CheckStatus, typeof CircleCheck>;
 const statusWord: Record<CheckStatus, string> = {
-  ok: 'Works',
-  warn: 'Check',
-  fail: 'Problem',
+  ok: 'Compatible',
+  warn: 'Revisar',
+  fail: 'Problema',
 };
 const slotIcon = {
   processor: Cpu,
@@ -82,16 +83,27 @@ const slotIcon = {
 /** Short names for the slot tags on each check. */
 const slotTag: Record<BuildSlot, string> = {
   processor: 'CPU',
-  cooler: 'Cooler',
-  board: 'Board',
+  cooler: 'Disipador',
+  board: 'Placa',
   memory: 'RAM',
-  storage: 'Storage',
+  storage: 'Discos',
   graphics: 'GPU',
   power: 'PSU',
 };
-const slotLabel = Object.fromEntries(
-  slots.map(({ id, label }) => [id, label]),
-) as Record<BuildSlot, string>;
+const slotLabel: Record<BuildSlot, string> = {
+  processor: 'Procesador',
+  cooler: 'Disipador de CPU',
+  board: 'Placa base',
+  memory: 'Memoria',
+  storage: 'Almacenamiento',
+  graphics: 'Tarjeta gráfica',
+  power: 'Fuente de alimentación',
+};
+
+function buildOptionName(slot: BuildSlot, name: string) {
+  const translated = spanishComponentName(name);
+  return translated === name ? `${slotLabel[slot]} · ${name}` : translated;
+}
 
 /** Each slot's colour, used on its icon, its options and its check tags. */
 const tint = (slot: BuildSlot) =>
@@ -176,13 +188,13 @@ export default function BuildWorkspace({
       <header className="build-topbar">
         <button className="build-back" onClick={onExit}>
           <ChevronLeft size={17} aria-hidden="true" />
-          <span>Explorer</span>
+          <span>Explorador</span>
         </button>
         <div className="build-title">
           <span className="build-title-icon" aria-hidden="true">
             <Wrench size={17} />
           </span>
-          <h1>Build your PC</h1>
+          <h1>Arma tu PC</h1>
         </div>
         <ShareBuild />
       </header>
@@ -191,7 +203,11 @@ export default function BuildWorkspace({
         className={'build-panels' + (sheet ? '' : ' sheet-down')}
         data-tab={tab}
       >
-        <div className="build-tabs" role="tablist" aria-label="Build panels">
+        <div
+          className="build-tabs"
+          role="tablist"
+          aria-label="Paneles de armado"
+        >
           <button
             role="tab"
             aria-selected={tab === 'parts'}
@@ -200,7 +216,7 @@ export default function BuildWorkspace({
               setSheet(true);
             }}
           >
-            Parts
+            Piezas
             {changed > 0 && <span className="build-tab-count">{changed}</span>}
           </button>
           <button
@@ -212,7 +228,7 @@ export default function BuildWorkspace({
             }}
             className={'status-' + overall}
           >
-            Checks
+            Compatibilidad
             {flagged > 0 && (
               <span className="build-tab-count status">{flagged}</span>
             )}
@@ -220,7 +236,7 @@ export default function BuildWorkspace({
           <button
             className="build-sheet-toggle"
             aria-expanded={sheet}
-            aria-label={sheet ? 'Hide the panels' : 'Show the panels'}
+            aria-label={sheet ? 'Ocultar paneles' : 'Mostrar paneles'}
             onClick={() => setSheet((shown) => !shown)}
           >
             <ChevronDown size={16} aria-hidden="true" />
@@ -230,11 +246,11 @@ export default function BuildWorkspace({
         <section
           id="build-parts"
           className={'build-parts' + (partsOpen ? '' : ' collapsed')}
-          aria-label="Parts"
+          aria-label="Piezas"
         >
           <PanelHead
-            title="Parts"
-            note={`${slots.length} slots`}
+            title="Piezas"
+            note={`${slots.length} ranuras`}
             open={partsOpen}
             side="left"
             controls="build-parts"
@@ -259,9 +275,8 @@ export default function BuildWorkspace({
                 ))}
               </ol>
               <p className="build-fixed">
-                The case stays the same in every build: an ATX tower with
-                standoffs for ATX and micro-ATX boards, room for a 420 mm card
-                and three 120 mm front fans.
+                El gabinete admite placas ATX y micro-ATX, tarjetas de hasta 420
+                mm y tres ventiladores frontales de 120 mm.
               </p>
             </div>
           ) : (
@@ -272,11 +287,11 @@ export default function BuildWorkspace({
         <section
           id="build-report"
           className={'build-report' + (checksOpen ? '' : ' collapsed')}
-          aria-label="Compatibility"
+          aria-label="Compatibilidad"
         >
           <PanelHead
-            title="Compatibility"
-            note={plural(checks.length, 'check')}
+            title="Compatibilidad"
+            note={plural(checks.length, 'prueba')}
             open={checksOpen}
             side="right"
             controls="build-report"
@@ -286,15 +301,14 @@ export default function BuildWorkspace({
             <div className="build-scroll">
               <Report build={build} checks={checks} onShowSlot={showSlot} />
               <p className="build-note">
-                Figures are each maker’s published numbers, or measurements of
-                the modelled case. A supply below a recommendation may still run
-                the machine; one below a stated minimum is not supported by the
-                card’s maker.
+                Las pruebas usan cifras del fabricante y medidas del gabinete
+                modelado. Revisa la potencia mínima de la tarjeta antes de
+                elegir la fuente.
               </p>
               {isCustomBuild(build) && (
                 <button className="build-restore" onClick={onRestore}>
                   <RotateCcw size={13} aria-hidden="true" />
-                  Back to the original build
+                  Restaurar configuración original
                 </button>
               )}
             </div>
@@ -312,16 +326,16 @@ export default function BuildWorkspace({
         {fitting && (
           <output className="build-fitting" aria-live="polite">
             <LoaderCircle size={14} aria-hidden="true" />
-            Fitting the parts…
+            Colocando las piezas…
           </output>
         )}
         <button aria-pressed={airflow} onClick={onToggleAirflow}>
           <Wind size={14} aria-hidden="true" />
-          Airflow
+          Aire
         </button>
         <button aria-pressed={power} onClick={onTogglePower}>
           <Zap size={14} aria-hidden="true" />
-          Power
+          Energía
         </button>
       </div>
     </>
@@ -451,7 +465,7 @@ function ShareBuild() {
       <button
         className={'build-share' + (shared?.copied ? ' copied' : '')}
         onClick={copy}
-        title="Copy a link to this build"
+        title="Copiar un enlace a esta configuración"
       >
         {shared?.copied ? (
           <Check size={15} aria-hidden="true" />
@@ -459,7 +473,7 @@ function ShareBuild() {
           <Share2 size={15} aria-hidden="true" />
         )}
         <span aria-live="polite">
-          {shared?.copied ? 'Copied' : 'Share your build'}
+          {shared?.copied ? 'Copiado' : 'Compartir configuración'}
         </span>
       </button>
       {shared && (
@@ -468,12 +482,12 @@ function ShareBuild() {
             {shared.copied ? (
               <>
                 <Check size={14} aria-hidden="true" />
-                Link copied to your clipboard
+                Enlace copiado al portapapeles
               </>
             ) : (
               <>
                 <Link2 size={14} aria-hidden="true" />
-                Copy this link
+                Copiar este enlace
               </>
             )}
           </p>
@@ -482,8 +496,8 @@ function ShareBuild() {
           </p>
           <p className="build-share-hint">
             {shared.copied
-              ? 'Paste it into a message or a post. Whoever opens it sees this build, part for part.'
-              : 'The browser did not allow copying, so the link is selected for you to copy.'}
+              ? 'Quien abra el enlace verá esta misma configuración.'
+              : 'Seleccionamos el enlace para que puedas copiarlo.'}
           </p>
         </div>
       )}
@@ -552,7 +566,9 @@ function SlotSection({
         </span>
         <span className="build-slot-text">
           <span className="build-slot-label">{slotLabel[slot]}</span>
-          <strong>{chosen.name}</strong>
+          <strong title={chosen.name}>
+            {buildOptionName(slot, chosen.name)}
+          </strong>
           <small>{chosen.summary}</small>
         </span>
         <span
@@ -572,7 +588,7 @@ function SlotSection({
           {options.length > 2 && brands.length > 1 && (
             <fieldset
               className="build-filter"
-              aria-label={`Filter ${slotLabel[slot].toLowerCase()} by maker`}
+              aria-label={`Filtrar ${slotLabel[slot].toLowerCase()} por fabricante`}
             >
               {(['all', ...brands] as const).map((b) => (
                 <button
@@ -581,14 +597,14 @@ function SlotSection({
                   className={b === 'all' ? '' : 'brand-' + b}
                   onClick={() => setBrand(b)}
                 >
-                  {b === 'all' ? `All ${options.length}` : brandName[b]}
+                  {b === 'all' ? `Todos (${options.length})` : brandName[b]}
                 </button>
               ))}
             </fieldset>
           )}
           <fieldset
             className="build-options"
-            aria-label={`${slotLabel[slot]} options`}
+            aria-label={`Opciones de ${slotLabel[slot].toLowerCase()}`}
           >
             {shown.map((option) => (
               <OptionCard
@@ -643,8 +659,9 @@ function OptionCard<S extends BuildSlot>({
           {chosen && <Check size={11} strokeWidth={3} />}
         </span>
         <span className="build-option-text">
-          <strong>{name}</strong>
-          <small>{summary}</small>
+          <strong>{buildOptionName(slot, name)}</strong>
+          <small lang="en">{name}</small>
+          <small lang="en">{summary}</small>
         </span>
         {brand && (
           <span className={'build-brand brand-' + brand}>
@@ -672,7 +689,7 @@ function OptionCard<S extends BuildSlot>({
           ) : (
             <TriangleAlert size={12} aria-hidden="true" />
           )}
-          <em>{fit.status === 'fail' ? 'Conflicts' : 'Check'}</em>
+          <em>{fit.status === 'fail' ? 'Conflicts' : 'Revisar'}</em>
           {fit.reason}
         </span>
       )}
@@ -703,12 +720,16 @@ function SlotRail({
   onShow: (slot: BuildSlot) => void;
 }) {
   return (
-    <ul className="build-rail" aria-label="Slots">
-      {slots.map(({ id, label }) => {
+    <ul className="build-rail" aria-label="Ranuras">
+      {slots.map(({ id }) => {
+        const label = slotLabel[id];
         const Icon = slotIcon[id];
         const status = slotStatus(checks, id);
         const options = slotOptions(id);
-        const part = options.find((o) => o.id === build[id])!.name;
+        const part = buildOptionName(
+          id,
+          options.find((o) => o.id === build[id])!.name,
+        );
         return (
           <li key={id} style={tint(id)}>
             <button
@@ -741,9 +762,9 @@ function VerdictRail({
   return (
     <button
       className={'build-rail-verdict status-' + status}
-      title="Show compatibility"
-      aria-label={`Compatibility: ${
-        flagged ? plural(flagged, 'thing') + ' to look at' : 'everything works'
+      title="Ver compatibilidad"
+      aria-label={`Compatibilidad: ${
+        flagged ? plural(flagged, 'advertencia') : 'componentes compatibles'
       }`}
       onClick={onShow}
     >
@@ -766,7 +787,7 @@ function PowerBudget({ build }: { build: DesktopBuild }) {
   return (
     <div className={'build-power' + (over ? ' over' : '')}>
       <div className="build-power-head">
-        <span>Rated draw</span>
+        <span>Consumo nominal</span>
         <strong>
           {cpu + gpu} W <small>of {supply} W</small>
         </strong>
@@ -799,14 +820,14 @@ function Key({ slot, children }: { slot: BuildSlot; children: ReactNode }) {
 }
 
 const groupTitle: Record<CheckStatus, string> = {
-  fail: 'Problems to fix',
-  warn: 'Worth checking',
-  ok: 'Passing',
+  fail: 'Problemas por resolver',
+  warn: 'Aspectos por revisar',
+  ok: 'Pruebas superadas',
 };
 const countWord: Record<CheckStatus, string> = {
-  fail: 'to fix',
-  warn: 'to check',
-  ok: 'pass',
+  fail: 'por resolver',
+  warn: 'por revisar',
+  ok: 'superadas',
 };
 
 /** The checks under each result, worst first. */
@@ -883,7 +904,10 @@ function Report({
             </section>
           ),
       )}
-      <section className="build-check-group status-ok" aria-label="Passing">
+      <section
+        className="build-check-group status-ok"
+        aria-label="Pruebas superadas"
+      >
         <button
           className="build-passing"
           aria-expanded={passing}
@@ -891,7 +915,7 @@ function Report({
         >
           <CircleCheck size={14} aria-hidden="true" />
           {groups.ok.length === checks.length
-            ? `All ${checks.length} checks pass`
+            ? `Las ${checks.length} pruebas son compatibles`
             : `${plural(groups.ok.length, 'check')} passing`}
           <ChevronDown size={14} aria-hidden="true" />
         </button>
@@ -921,13 +945,13 @@ function Verdict({
       <output>
         <strong>
           {overall === 'ok'
-            ? 'Everything works together'
+            ? 'Componentes compatibles'
             : overall === 'warn'
-              ? `Works, with ${plural(count('warn'), 'thing')} to check`
-              : `${plural(count('fail'), 'problem')} to fix`}
+              ? `Compatible con ${plural(count('warn'), 'advertencia')}`
+              : `${plural(count('fail'), 'problema')} por resolver`}
         </strong>
         <small>
-          {count('ok')} of {total} checks pass
+          {count('ok')} de {total} pruebas superadas
         </small>
       </output>
       <span className="build-tally" aria-hidden="true">
@@ -997,7 +1021,7 @@ function CheckRow({
       </button>
       {open && (
         <div className="build-check-body" id={body}>
-          <p>{check.detail}</p>
+          <p lang="en">{check.detail}</p>
           {check.status !== 'ok' && (
             <span className="build-check-fix">
               {checkSlots(check.id).map((slot) => (
@@ -1006,7 +1030,7 @@ function CheckRow({
                   style={tint(slot)}
                   onClick={() => onShowSlot(slot)}
                 >
-                  Change the {slotLabel[slot].toLowerCase()}
+                  Cambiar {slotLabel[slot].toLowerCase()}
                   <ChevronRight size={13} aria-hidden="true" />
                 </button>
               ))}

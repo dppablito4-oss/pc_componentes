@@ -32,11 +32,11 @@ type Status = 'idle' | 'sending' | Outcome;
 
 const PROBLEMS: Partial<Record<Status, string>> = {
   invalid:
-    'Something in the form could not be accepted. Check the message is between 10 and 5000 characters and the email address is complete.',
+    'Revisa que el mensaje tenga entre 10 y 5000 caracteres y que el correo esté completo.',
   rate_limited:
-    'That is a lot of messages in a short time. Please wait a few minutes and try again.',
+    'Has enviado varios mensajes en poco tiempo. Inténtalo de nuevo en unos minutos.',
   failed:
-    'The message could not be sent. Check your connection and try again; what you wrote is still here.',
+    'No se pudo enviar el mensaje. Revisa tu conexión y vuelve a intentarlo. Tu texto sigue aquí.',
 };
 
 /**
@@ -81,11 +81,11 @@ export default function FeedbackDialog({ open, onOpenChange, context }: Props) {
   return (
     <Dialog open={open} onOpenChange={change} modal>
       <DialogContent className="about-dialog feedback-dialog">
-        <DialogTitle>Send feedback</DialogTitle>
+        <DialogTitle>Enviar comentarios</DialogTitle>
         <DialogDescription>
           {GITHUB_PAGES
-            ? 'Share a suggestion or report a problem in the GitHub repository.'
-            : 'Spotted a mistake, have an idea, or want to work together on PC Anatomy? Tell me here.'}
+            ? 'Comparte una sugerencia o reporta un problema en el repositorio de GitHub.'
+            : 'Cuéntanos si encontraste un error, tienes una idea o quieres colaborar en PC Anatomy.'}
         </DialogDescription>
         {GITHUB_PAGES ? (
           <a
@@ -94,29 +94,28 @@ export default function FeedbackDialog({ open, onOpenChange, context }: Props) {
             target="_blank"
             rel="noreferrer"
           >
-            Open a GitHub issue
+            Abrir un reporte en GitHub
             <ArrowUpRight size={15} />
           </a>
         ) : status === 'sent' ? (
           <div className="feedback-done">
             <output>
-              Thank you, your message was sent.
-              {replyTo && ' I will reply to the address you gave.'}
+              Gracias, enviamos tu mensaje.
+              {replyTo && ' Te responderemos al correo indicado.'}
             </output>
             <button
               type="button"
               className="feedback-submit"
               onClick={() => setStatus('idle')}
             >
-              Send another
+              Enviar otro mensaje
             </button>
           </div>
         ) : status === 'unavailable' ? (
           <div className="feedback-done" role="alert">
             <p>
-              The feedback form is not available on this copy of the site. You
-              can open an issue on GitHub instead; what you wrote is kept here
-              so you can copy it across.
+              Puedes abrir un reporte en GitHub. Tu texto se conserva aquí para
+              que puedas copiarlo.
             </p>
             <a
               className="feedback-submit"
@@ -124,7 +123,7 @@ export default function FeedbackDialog({ open, onOpenChange, context }: Props) {
               target="_blank"
               rel="noreferrer"
             >
-              Open a GitHub issue
+              Abrir un reporte en GitHub
               <ArrowUpRight size={15} />
             </a>
             <button
@@ -132,13 +131,13 @@ export default function FeedbackDialog({ open, onOpenChange, context }: Props) {
               className="feedback-back"
               onClick={() => setStatus('idle')}
             >
-              Back to the form
+              Volver al formulario
             </button>
           </div>
         ) : (
           <form className="feedback-form" onSubmit={submit}>
             <fieldset className="feedback-kinds">
-              <legend>What is it about?</legend>
+              <legend>¿De qué se trata?</legend>
               {KINDS.map((kind) => (
                 <label key={kind}>
                   <input
@@ -155,7 +154,7 @@ export default function FeedbackDialog({ open, onOpenChange, context }: Props) {
             <div className="feedback-row">
               <label>
                 <span>
-                  Name <small>optional</small>
+                  Nombre <small>opcional</small>
                 </span>
                 <input
                   name="name"
@@ -167,7 +166,7 @@ export default function FeedbackDialog({ open, onOpenChange, context }: Props) {
               </label>
               <label>
                 <span>
-                  Email <small>optional, so I can reply</small>
+                  Correo <small>opcional, para responderte</small>
                 </span>
                 <input
                   name="email"
@@ -181,7 +180,7 @@ export default function FeedbackDialog({ open, onOpenChange, context }: Props) {
             </div>
             <div className="feedback-message">
               <label>
-                <span>Message</span>
+                <span>Mensaje</span>
                 <textarea
                   name="message"
                   value={draft.message}
@@ -195,7 +194,7 @@ export default function FeedbackDialog({ open, onOpenChange, context }: Props) {
               </label>
               <small id="feedback-count" className="feedback-count">
                 {length < LIMITS.messageMin
-                  ? `At least ${LIMITS.messageMin} characters`
+                  ? `Al menos ${LIMITS.messageMin} caracteres`
                   : `${length} / ${LIMITS.messageMax}`}
               </small>
             </div>
@@ -214,9 +213,9 @@ export default function FeedbackDialog({ open, onOpenChange, context }: Props) {
               </label>
             </div>
             <p className="feedback-note">
-              The address of this page, what you have selected and the interface
-              language are sent along with your message. Your message is emailed
-              to the PC Anatomy maintainer and only used to reply to you.
+              El mensaje incluye la dirección de esta página, tu selección y el
+              idioma de la interfaz. Lo recibe el equipo de PC Anatomy para
+              poder responderte.
             </p>
             {problem && (
               <p className="feedback-error" role="alert">
@@ -233,7 +232,7 @@ export default function FeedbackDialog({ open, onOpenChange, context }: Props) {
               ) : (
                 <Send size={15} />
               )}
-              {status === 'sending' ? 'Sending…' : 'Send'}
+              {status === 'sending' ? 'Enviando…' : 'Enviar'}
             </button>
           </form>
         )}

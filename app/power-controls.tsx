@@ -9,10 +9,10 @@ import {
 import type { ExplorerState } from '@/lib/explorer-state';
 
 const targets: { id: PowerTarget; label: string }[] = [
-  { id: 'all', label: 'All' },
+  { id: 'all', label: 'Todo' },
   { id: 'cpu', label: 'CPU' },
   { id: 'gpu', label: 'GPU' },
-  { id: 'storage', label: 'Storage' },
+  { id: 'storage', label: 'Discos' },
 ];
 
 export default function PowerControls({
@@ -35,35 +35,42 @@ export default function PowerControls({
         className={
           'airflow-toggle power-toggle' + (state.power ? ' active' : '')
         }
-        aria-label={state.power ? 'Hide power flow' : 'Show power flow'}
+        aria-label={
+          state.power
+            ? 'Ocultar flujo de alimentación'
+            : 'Mostrar flujo de alimentación'
+        }
         aria-pressed={state.power}
         aria-controls="power-flow-panel"
-        title="Trace power from the PSU to each component"
+        title="Sigue la alimentación desde la fuente a cada pieza"
         onClick={onToggle}
       >
         <Zap size={15} />
-        <span>Power</span>
-        <small>{state.power ? 'On' : 'Off'}</small>
+        <span>Energía</span>
+        <small>{state.power ? 'Sí' : 'No'}</small>
       </button>
       {state.power && (
         <section
           className={'power-panel' + (expanded ? ' expanded' : '')}
           id="power-flow-panel"
-          aria-label="Power flow"
+          aria-label="Flujo de alimentación"
         >
           <div className="power-heading">
-            <strong>Follow the power</strong>
-            <span>FROM THE PSU</span>
+            <strong>Recorrido de la energía</strong>
+            <span>DESDE LA FUENTE</span>
             <button
               className="power-legend-toggle"
               aria-expanded={expanded}
               aria-controls="power-legend"
               onClick={() => setExpanded((value) => !value)}
             >
-              {expanded ? 'Less' : 'Details'}
+              {expanded ? 'Menos' : 'Detalles'}
             </button>
           </div>
-          <fieldset className="power-targets" aria-label="Power destination">
+          <fieldset
+            className="power-targets"
+            aria-label="Destino de la alimentación"
+          >
             {targets.map((target) => (
               <button
                 key={target.id}
@@ -85,7 +92,7 @@ export default function PowerControls({
                 <button
                   onClick={() => onInspect(route.inspect)}
                   title={route.description}
-                  aria-label={`Inspect ${route.destination}: ${route.label}`}
+                  aria-label={`Inspeccionar ${route.destination}: ${route.label}`}
                 >
                   <span>
                     <strong>{route.label}</strong>
@@ -100,8 +107,9 @@ export default function PowerControls({
           </ul>
           {explanation && <p className="power-explanation">{explanation}</p>}
           <p className="power-note">
-            Colors identify routes. Arrows show direction, not speed or watts.
-            Dashed line: power through the board.
+            Los colores distinguen las rutas y las flechas indican el sentido.
+            La línea discontinua representa la alimentación a través de la
+            placa.
           </p>
         </section>
       )}

@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/command';
 import { byId, searchConcepts } from '@/lib/manifest';
 import { hueOfSystem, hueStyle } from '@/lib/palette';
-import { levels } from '@/lib/levels';
+import { categoryEs, levelNameEs, partNameEs } from '@/lib/locale-es';
 
 /** What the palette offers before anything has been typed. */
 const suggested = [
@@ -48,22 +48,22 @@ export default function SearchDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange} modal>
       <DialogContent className="search-dialog">
-        <DialogTitle>Find a component</DialogTitle>
+        <DialogTitle>Buscar un componente</DialogTitle>
         <DialogDescription>
-          Jump to any hardware or architecture resource.
+          Abre cualquier pieza física o diagrama de arquitectura.
         </DialogDescription>
         <Command shouldFilter={false}>
           <CommandInput
             value={query}
             onValueChange={onQueryChange}
-            placeholder="Try Tensor, GDDR7, L2 or SM…"
+            placeholder="Prueba con memoria, GDDR7, L2 o SM…"
           />
           <CommandList>
             <CommandEmpty>
-              No matching components. Try “memory” or “CUDA”.
+              No encontramos componentes. Prueba con «memoria» o «CUDA».
             </CommandEmpty>
             <CommandGroup
-              heading={query ? 'Matching structures' : 'Explore the specimen'}
+              heading={query ? 'Resultados' : 'Componentes sugeridos'}
             >
               {(query
                 ? searchConcepts(query)
@@ -77,14 +77,17 @@ export default function SearchDialog({
                 >
                   <i />
                   <div>
-                    {c.name}
+                    {partNameEs(c)}
+                    <span className="part-english" lang="en">
+                      {c.name}
+                    </span>
                     <small>
-                      <span>{levels[c.level].name}</span>
+                      <span>{levelNameEs(c.level)}</span>
                       <em>
-                        <b>{c.category}</b> ·{' '}
+                        <b>{categoryEs[c.category]}</b> ·{' '}
                         {c.representationType === 'logical'
-                          ? 'Logical architecture'
-                          : 'Physical hardware'}
+                          ? 'Arquitectura lógica'
+                          : 'Componente físico'}
                       </em>
                     </small>
                   </div>
@@ -95,7 +98,7 @@ export default function SearchDialog({
           </CommandList>
         </Command>
         <div className="search-hint">
-          ↑ ↓ to browse <span>Enter to inspect</span>
+          ↑ ↓ Navegar <span>Intro para inspeccionar</span>
         </div>
       </DialogContent>
     </Dialog>

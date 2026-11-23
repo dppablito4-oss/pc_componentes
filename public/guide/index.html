@@ -1,12 +1,12 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>How PC Components Work — A Visual Guide | PC Anatomy</title>
+    <title>Guía visual de componentes de PC | PC Anatomy</title>
     <meta
       name="description"
-      content="Learn what the motherboard, CPU, GPU, RAM, storage, cooling and power supply do. Explore each part of a desktop computer with PC Anatomy’s free 3D tool."
+      content="Descubre cómo funcionan la placa base, la CPU, la GPU, la RAM, el almacenamiento y la fuente de alimentación."
     />
     <link rel="canonical" href="https://pc.sypablitodp.site/guide/" />
     <link rel="icon" type="image/png" sizes="96x96" href="../favicon-96.png" />
@@ -18,11 +18,11 @@
     <meta property="og:site_name" content="PC Anatomy" />
     <meta
       property="og:title"
-      content="How PC Components Work — A Visual Guide"
+      content="Guía visual de componentes de PC"
     />
     <meta
       property="og:description"
-      content="From the case to a compute core: learn what each part of your computer does, then explore it in 3D."
+      content="Descubre cómo funciona cada pieza de la PC y explórala en 3D."
     />
     <meta
       property="og:url"
@@ -197,219 +197,150 @@
       <a class="brand" href="../"
         ><img src="../favicon.svg" alt="" width="32" height="32" />PC Anatomy</a
       >
-      <a href="../">Open the 3D explorer ↗</a>
+      <a href="../">Abrir el visor 3D</a>
     </header>
     <main>
-      <p class="eyebrow">A field guide to computer hardware</p>
-      <h1>What’s inside a PC?<br />See how it all fits.</h1>
+      <p class="eyebrow">Guía de componentes</p>
+      <h1>¿Qué hay dentro de una PC?</h1>
       <p class="intro">
-        A desktop computer is a collection of parts working together. PC Anatomy
-        lets you take them apart in 3D, see their connections, and follow the
-        hardware from a complete case to a single GPU compute core.
+        Explora cómo se conectan los componentes, desde una torre completa
+        hasta un núcleo de cómputo de la GPU.
       </p>
-      <a class="cta" href="../">Explore a PC in 3D →</a>
+      <a class="cta" href="../">Explorar una PC en 3D</a>
       <figure>
         <img
           src="../pc-assembled.png"
-          alt="An assembled desktop PC showing its detailed motherboard, RTX 5090 graphics card, CPU cooler, case fans and power supply through the glass side panel."
+          alt="Torre ATX montada con la placa base, la tarjeta RTX 5090, el disipador, los ventiladores y la fuente de alimentación visibles."
           width="1200"
           height="900"
           fetchpriority="high"
         />
         <figcaption>
-          The assembled ATX tower in PC Anatomy. Open the explorer to orbit the
-          case, inspect a part, or move the disassembly slider.
+          Torre ATX montada. En el visor puedes girarla, inspeccionar una pieza
+          o mover el control de desmontaje.
         </figcaption>
       </figure>
-      <nav aria-label="PC components">
-        <a href="#case">Case</a><a href="#motherboard">Motherboard</a
-        ><a href="#cpu">CPU</a><a href="#gpu">GPU</a><a href="#ram">RAM</a
-        ><a href="#storage">Storage</a><a href="#power">Power supply</a
-        ><a href="#cooling">Cooling</a>
+      <nav aria-label="Componentes de PC">
+        <a href="#case">Gabinete</a><a href="#motherboard">Placa base</a>
+        <a href="#cpu">CPU</a><a href="#gpu">GPU</a><a href="#ram">RAM</a>
+        <a href="#storage">Almacenamiento</a><a href="#power">Fuente</a>
+        <a href="#cooling">Refrigeración</a>
       </nav>
       <div class="components">
         <section id="case">
-          <h2><span>01</span>The case</h2>
+          <h2><span>01</span>Gabinete</h2>
           <p>
-            The case holds the machine together. Its frame supports the
-            motherboard, graphics card, drives and power supply. Mounting points
-            keep components in position, while ventilation openings and fan
-            mounts give air a path through the enclosure. In PC Anatomy, remove
-            the glass panels and lid to see how the parts sit inside an ATX
-            tower.
+            El chasis sujeta la placa base, la tarjeta gráfica, las unidades de
+            almacenamiento y la fuente. Sus aberturas y ventiladores permiten
+            circular el aire. Retira los paneles del modelo para ver cómo se
+            montan las piezas en una torre ATX.
           </p>
         </section>
         <section id="motherboard">
-          <h2><span>02</span>The motherboard</h2>
+          <h2><span>02</span>Placa base</h2>
           <p>
-            The motherboard connects the computer’s components. Its CPU socket
-            holds the processor; DIMM slots hold memory; PCI Express slots
-            connect expansion cards such as the GPU. Power circuitry supplies
-            the processor, and M.2 slots connect compact SSDs. Inspect the board
-            to find sockets, connectors, heatsinks and the smaller electronic
-            parts between them.
+            La placa base conecta los componentes. El procesador ocupa el
+            zócalo, la memoria va en las ranuras DIMM y las tarjetas de expansión
+            se conectan por PCI Express. Inspecciona las ranuras M.2 para SSD,
+            los conectores y los circuitos que alimentan el procesador.
           </p>
         </section>
         <section id="cpu">
-          <h2><span>03</span>The CPU</h2>
+          <h2><span>03</span>Procesador (CPU)</h2>
           <p>
-            The central processing unit runs program instructions, from
-            application logic to operating-system tasks. Modern desktop
-            processors have multiple cores and caches that keep frequently
-            needed data nearby. PC Anatomy explores the Ryzen 9 9950X and Core
-            Ultra 9 285K, including their chiplet or tile organization. The
-            silicon views explain architecture rather than exact transistor
-            placement.
+            La CPU ejecuta instrucciones de programas y del sistema operativo.
+            Sus núcleos disponen de cachés para acceder rápido a los datos más
+            usados. Los modelos Ryzen 9 9950X y Core Ultra 9 285K muestran cómo
+            se organizan en chiplets o mosaicos. Los diagramas representan la
+            arquitectura lógica de cada chip.
           </p>
         </section>
         <section id="gpu">
-          <h2><span>04</span>The graphics card</h2>
+          <h2><span>04</span>Tarjeta gráfica</h2>
           <p>
-            A graphics card combines a GPU processor, dedicated video memory,
-            power delivery and cooling. The GPU performs many operations in
-            parallel for graphics and other workloads. Open the RTX 5090 model
-            to separate the fans, shroud, fin stacks, heat pipes and circuit
-            board. Then descend into the GB202 architecture to explore graphics
-            processing clusters and streaming multiprocessors.
+            Una tarjeta gráfica integra la GPU, la memoria de vídeo y los
+            sistemas de alimentación y refrigeración. Abre la RTX 5090 para
+            separar sus ventiladores, cubierta, tubos de calor y placa. Entra
+            en el GB202 para ver sus clústeres y multiprocesadores de flujo.
           </p>
           <p>
-            Two more cards sit alongside it in the GPU menu. The AMD Radeon RX
-            9070 XT opens into Navi 48, whose shader engines, workgroup
-            processors and compute units combine vector arithmetic, matrix
-            math and ray tracing. The Intel Arc B580 opens into BMG-G21, built
-            from render slices, Xe-cores and vector engines with XMX matrix
-            engines beside them.
+            La Radeon RX 9070 XT permite explorar los motores de sombreado y
+            las unidades de cómputo del Navi 48. En la Intel Arc B580 puedes
+            recorrer las secciones de renderizado, los núcleos Xe y los
+            motores vectoriales y matriciales XMX.
           </p>
         </section>
         <section id="ram">
-          <h2><span>05</span>RAM</h2>
+          <h2><span>05</span>Memoria RAM</h2>
           <p>
-            Random-access memory holds the programs and data the processor is
-            actively using. It provides fast working space, but its contents are
-            lost when power is removed. Desktop memory modules fit into keyed
-            DIMM slots beside the CPU. Inspect the motherboard to see the
-            modules, their sockets and the notches that align them.
+            La memoria de acceso aleatorio guarda temporalmente los datos y
+            programas que utiliza el procesador. Su contenido se pierde al
+            cortar la alimentación. Los módulos de escritorio encajan en
+            ranuras DIMM con una muesca que indica su orientación.
           </p>
         </section>
         <section id="storage">
-          <h2><span>06</span>Storage</h2>
+          <h2><span>06</span>Almacenamiento</h2>
           <p>
-            Storage keeps files when the computer is switched off. A solid-state
-            drive stores data in flash memory and uses a controller to manage
-            reads and writes. PC Anatomy includes a SATA SSD with separate data
-            and power connections, plus a separate M.2 NVMe SSD model under
-            Storage. Take it apart to inspect its controller, NAND flash, DRAM,
-            keyed contacts and mounting screw. You can also open it from the
-            motherboard. These differ from RAM in both their role and how they
-            connect.
+            Un SSD conserva los archivos en memoria flash cuando apagas el
+            equipo. El modelo SATA permite ver sus conexiones de datos y de
+            alimentación. Abre el SSD M.2 NVMe para inspeccionar el controlador,
+            la memoria NAND, la DRAM y los contactos.
           </p>
         </section>
         <section id="power">
-          <h2><span>07</span>The power supply</h2>
+          <h2><span>07</span>Fuente de alimentación</h2>
           <p>
-            The power supply converts mains electricity into the DC power used
-            by the computer. Separate cables feed the motherboard, CPU and
-            graphics card. Trace those connections in the case, then inspect the
-            power-supply model to learn about its internal stages. The virtual
-            disassembly is an educational model, not a guide to opening a real
-            power supply.
+            La fuente convierte la corriente alterna en corriente continua y
+            la distribuye a la placa base, el procesador y la tarjeta gráfica.
+            En el visor puedes seguir el cableado e inspeccionar las etapas
+            internas del modelo educativo.
           </p>
         </section>
         <section id="cooling">
-          <h2><span>08</span>Cooling</h2>
+          <h2><span>08</span>Refrigeración</h2>
           <p>
-            Processors turn some of their electrical energy into heat. Thermal
-            interfaces transfer it into a cooler; heat pipes and metal fins
-            spread it over a larger surface; fans move warmed air away. Compare
-            the tower CPU cooler, graphics-card cooling, case fans and separate
-            liquid-cooling model to understand each part of that heat-transfer
-            path.
+            La interfaz térmica conduce calor del chip al disipador. Los tubos
+            de calor lo distribuyen por las aletas y los ventiladores expulsan
+            el aire caliente. Compara el disipador de la CPU, la refrigeración
+            de la GPU y el circuito líquido para ver sus diferencias.
           </p>
         </section>
       </div>
       <section class="how">
-        <h2>How to use PC Anatomy</h2>
+        <h2>Cómo usar PC Anatomy</h2>
         <ol>
-          <li>
-            <strong>Start assembled.</strong> Drag to orbit the computer and
-            scroll or pinch to zoom.
-          </li>
-          <li>
-            <strong>Take it apart.</strong> Move the bottom slider from
-            Assembled to Dissection to Inventory, or press Auto.
-          </li>
-          <li>
-            <strong>Look closer.</strong> Click an explorable part to open its
-            detailed view. Right-click to inspect, hide, isolate or focus it. On
-            touch screens, use the component menus and search.
-          </li>
-          <li>
-            <strong>Follow the hierarchy.</strong> Use the scale navigator and
-            breadcrumbs to move between the machine, its components and their
-            internals.
-          </li>
+          <li><strong>Gira el modelo.</strong> Arrastra la torre. Usa la rueda o pellizca la pantalla para acercarte.</li>
+          <li><strong>Desmonta la torre.</strong> Elige Montado, Desmontaje o Inventario en la barra inferior, o pulsa Auto.</li>
+          <li><strong>Inspecciona una pieza.</strong> Haz clic derecho para abrir su ficha o haz clic izquierdo para explorar su interior cuando esté disponible. En pantallas táctiles, toca la pieza.</li>
+          <li><strong>Regresa al módulo anterior.</strong> Usa Atrás y Adelante en el visor o los botones laterales 4 y 5 del ratón.</li>
         </ol>
         <p>
-          The free, open-source explorer runs in a browser with JavaScript and
-          WebGL. Component entries include explanations, specifications and
-          source references. Mechanical models are educational approximations;
-          named processors and GPUs are explored using documented architecture.
+          El visor utiliza JavaScript y WebGL. Las fichas presentan cada nombre
+          en español e inglés y enlazan a las referencias técnicas.
         </p>
-        <a class="cta" href="../">Start exploring →</a>
+        <a class="cta" href="../">Empezar a explorar</a>
       </section>
       <section class="how" id="smoother-3d">
-        <h2>Smoother 3D in your browser</h2>
-        <p>
-          Hardware acceleration lets your browser use the GPU for 3D rendering.
-          If exploration feels slow, check that it is enabled. This is a general
-          recommendation; PC Anatomy does not detect your browser’s setting.
-        </p>
+        <h2>Aceleración gráfica del navegador</h2>
+        <p>Activa la aceleración gráfica si el visor tarda en responder.</p>
         <ul>
-          <li>
-            <strong>Chrome on desktop:</strong> Open Settings → System, enable
-            “Use graphics acceleration when available”, then relaunch Chrome.
-            You can also paste <code>chrome://settings/system</code> into the
-            address bar.
-          </li>
-          <li>
-            <strong>Edge on desktop:</strong> Open Settings → System and
-            performance, find “Use graphics acceleration when available”, enable
-            it and restart Edge. You can paste
-            <code>edge://settings/system</code> into the address bar.
-          </li>
-          <li>
-            <strong>Firefox on desktop:</strong> Open Settings → General →
-            Performance. Clear “Use recommended performance settings” to reveal
-            “Use hardware acceleration when available”, enable it and restart
-            Firefox.
-            <a
-              href="https://support.mozilla.org/en-US/kb/performance-settings"
-              target="_blank"
-              rel="noreferrer"
-              >Firefox’s illustrated instructions</a
-            >.
+          <li><strong>Chrome.</strong> En Configuración → Sistema, activa la aceleración gráfica y reinicia el navegador. También puedes abrir <code>chrome://settings/system</code>.</li>
+          <li><strong>Edge.</strong> En Configuración → Sistema y rendimiento, activa la aceleración gráfica y reinicia Edge. También puedes abrir <code>edge://settings/system</code>.</li>
+          <li><strong>Firefox.</strong> En Configuración → General → Rendimiento, desactiva la configuración recomendada, habilita la aceleración por hardware y reinicia Firefox.
+            <a href="https://support.mozilla.org/es/kb/configuraciones-de-rendimiento-de-firefox" target="_blank" rel="noreferrer">Guía de Firefox</a>.
           </li>
         </ul>
-        <p>
-          Save work in other tabs before relaunching. Safari and mobile browsers
-          manage acceleration automatically and generally do not expose this
-          switch. A managed browser or unsupported driver may make the setting
-          unavailable.
-        </p>
-        <a href="../">Return to the 3D explorer →</a>
+        <p>Safari y la mayoría de los navegadores móviles gestionan la aceleración de forma automática.</p>
+        <a href="../">Volver al visor 3D</a>
       </section>
     </main>
     <footer>
       <p>
-        PC Anatomy · Created by Yoseph ·
-        <a href="https://github.com/Yoosseph/pc-anatomy"
-          >Source code and research references</a
-        >
+        PC Anatomy · Creado por Yoseph ·
+        <a href="https://github.com/Yoosseph/pc-anatomy">Código fuente y referencias</a>
       </p>
-      <p>
-        Independent educational project. No affiliation with NVIDIA, AMD, Intel
-        or ASUS.
-      </p>
+      <p>Proyecto educativo independiente de NVIDIA, AMD, Intel y ASUS.</p>
     </footer>
   </body>
 </html>
